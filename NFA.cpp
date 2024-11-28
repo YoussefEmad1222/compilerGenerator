@@ -73,7 +73,7 @@ public:
     NFA(long long &globalStateID) {
         start = new stateNFA(globalStateID++);
         end = new stateNFA(globalStateID++);
-        start->addTransition('\0', end);
+        start->addTransition(EPSILON, end);
     }
 
     NFA() = default;
@@ -93,24 +93,24 @@ public:
 class nfaOperations {
 public:
     NFA concatenationNFA(NFA &nfa1, NFA &nfa2) {
-        nfa1.getEnd()->addTransition('\0', nfa2.getStart());
+        nfa1.getEnd()->addTransition(EPSILON, nfa2.getStart());
         return NFA(nfa1.getStart(), nfa2.getEnd());
     }
 
     NFA unionNFA(NFA &nfa1, NFA &nfa2, long long &globalStateID) {
         stateNFA *newStart = new stateNFA(globalStateID++);
         stateNFA *newEnd = new stateNFA(globalStateID++);
-        newStart->addTransitions('\0', {nfa1.getStart(), nfa2.getStart()});
-        nfa2.getEnd()->addTransition('\0', newEnd);
-        nfa1.getEnd()->addTransition('\0', newEnd);
+        newStart->addTransitions(EPSILON, {nfa1.getStart(), nfa2.getStart()});
+        nfa2.getEnd()->addTransition(EPSILON, newEnd);
+        nfa1.getEnd()->addTransition(EPSILON, newEnd);
         return NFA(newStart, newEnd);
     }
 
     NFA kleene_closureNFA(NFA &nfa, long long &globalStateID) {
         stateNFA *newStart = new stateNFA(globalStateID++);
         stateNFA *newEnd = new stateNFA(globalStateID++);
-        newStart->addTransitions('\0', {nfa.getStart(), newEnd});
-        nfa.getEnd()->addTransitions('\0', {nfa.getStart(), newEnd});
+        newStart->addTransitions(EPSILON, {nfa.getStart(), newEnd});
+        nfa.getEnd()->addTransitions(EPSILON, {nfa.getStart(), newEnd});
         return NFA(newStart, newEnd);
     }
 
