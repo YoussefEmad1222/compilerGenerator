@@ -1,0 +1,12 @@
+letter = a-b | A-B
+digit = 0-1
+id: letter (letter|digit)*
+digits = digit+
+{boolean int float}
+num: digit+ | digit+ . digits ( \L | E digits)
+relop: \=\= | !\= | > | >\= | < | <\=
+assign: =
+{ if else while }
+[; , \( \) { }]
+addop: \+ | -
+mulop: \* | /
