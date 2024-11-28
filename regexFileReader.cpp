@@ -62,10 +62,10 @@ public:
             string result = "(";
             for (char c = start; c < end; ++c) {
                 result.push_back(c);
-                result.push_back('|');
+                result.push_back(UNION_OPERATOR);
             }
             result.push_back(end);
-            result.push_back(')');
+            result.push_back(RIGHT_PARENTHESIS);
             return result;
         };
 
@@ -149,7 +149,7 @@ public:
                 newExpression.push_back(currentChar);
 
                 if (isConcatNeeded(currentChar, nextChar)) {
-                    newExpression.push_back('?');
+                    newExpression.push_back(CONCATENATION_OPERATOR);
                 }
             }
 
@@ -159,9 +159,10 @@ public:
 
     bool isConcatNeeded(char currentChar, char nextChar) {
         if (nextChar == '\0') return false;
-        bool concatNeeded = (isalnum(currentChar) || currentChar == ')' || currentChar == '*' || currentChar == '+');
-        concatNeeded = concatNeeded && (isalnum(nextChar) || nextChar == '(');
-        concatNeeded = concatNeeded || nextChar == '\\' && currentChar != '(';
+        bool concatNeeded = (isalnum(currentChar) || currentChar == RIGHT_PARENTHESIS ||
+                             currentChar == KLEENE_STAR_OPERATOR || currentChar == PLUS_OPERATOR);
+        concatNeeded = concatNeeded && (isalnum(nextChar) || nextChar == LEFT_PARENTHESIS);
+        concatNeeded = concatNeeded || nextChar == ESCAPE_CHARACTER && currentChar != LEFT_PARENTHESIS;
         return concatNeeded;
     }
 

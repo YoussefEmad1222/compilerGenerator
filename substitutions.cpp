@@ -1,5 +1,5 @@
-#include <iostream>
-#include <bits/stdc++.h>
+
+#include "constants.h"
 
 using namespace std;
 
@@ -54,9 +54,9 @@ public:
         while (start < n) {
             string longest = longestPrefix(regex, start);
             if (!longest.empty()) {
-                expandedRegex += '(';
+                expandedRegex += LEFT_PARENTHESIS;
                 expandedRegex += definitions[longest];
-                expandedRegex += ')';
+                expandedRegex += RIGHT_PARENTHESIS;
                 start += longest.length();
             } else {
                 expandedRegex += regex[start];

@@ -1,10 +1,6 @@
 #include "NFA.cpp"
-#include <iostream>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
-#include <stack>
-#include <string>
+#include "constants.h"
+#include <functional>
 
 class nfaCreation {
     long long globalStateID = 0;
@@ -17,15 +13,15 @@ class nfaCreation {
         for (int i = 0; i < n; i++) {
             char c = postfixRegex[i];
             switch (c) {
-                case '\\': {
+                case ESCAPE_CHARACTER: {
                     if (postfixRegex[i + 1] == 'L') {
-                        nfaStack.push(operations.characterNFA('\0', globalStateID));
+                        nfaStack.push(operations.characterNFA(EPSILON, globalStateID));
                         i++;
                     }
                     nfaStack.push(operations.characterNFA(postfixRegex[++i], globalStateID));
                     break;
                 }
-                case '|': {
+                case UNION_OPERATOR: {
                     NFA nfa1 = nfaStack.top();
                     nfaStack.pop();
                     NFA nfa2 = nfaStack.top();
@@ -33,13 +29,13 @@ class nfaCreation {
                     nfaStack.push(operations.unionNFA(nfa1, nfa2, globalStateID));
                     break;
                 }
-                case '+':
+                case PLUS_OPERATOR:
                     nfaStack.push(operations.oneOrMore_closureNFA(nfaStack.top(), globalStateID));
                     break;
-                case '*':
+                case KLEENE_STAR_OPERATOR:
                     nfaStack.push(operations.kleene_closureNFA(nfaStack.top(), globalStateID));
                     break;
-                case '?': {
+                case CONCATENATION_OPERATOR: {
                     NFA nfa2 = nfaStack.top();
                     nfaStack.pop();
                     NFA nfa1 = nfaStack.top();
@@ -58,8 +54,9 @@ class nfaCreation {
         return resultNFA;
     }
 
+
 public:
-    nfaCreation(){
+    nfaCreation() {
         globalStateID = 0;
         regexNFAs.clear();
     }
@@ -76,12 +73,18 @@ public:
         set.insert(nfa.getID());
 
         string indentation(indent, ' ');
-        cout << indentation << "State ID: " << nfa.getID() << (nfa.isFinalState() ? " (Final)" : "") << endl;
-        cout << indentation << "Transitions:" << endl;
+        cout << indentation << "State ID: " << nfa.getID()
+             << (!nfa.getNameIfFinal().empty() ? " (Final: " + nfa.getNameIfFinal() + ")" : "") << endl;
+
+        if (nfa.getTransitions().empty()) {
+            cout << indentation << "  NO TRANSITIONS" << endl;
+        } else {
+            cout << indentation << "  TRANSITIONS: " << endl;
+        }
 
         for (const auto &transition: nfa.getTransitions()) {
             cout << indentation << "  ON ";
-            if (transition.first != '\0') {
+            if (transition.first != EPSILON) {
                 cout << transition.first << " -> ";
             } else {
                 cout << "EPSILON -> ";

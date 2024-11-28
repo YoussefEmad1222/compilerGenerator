@@ -1,17 +1,19 @@
 #include <iostream>
 #include <bits/stdc++.h>
+#include "constants.h"
 
 using namespace std;
 
 class postfixRegexConvertor {
     bool isOperator(char c) {
-        return c == '|' || c == '*' || c == '+' || c == '?' || c =='(' || c == ')';
+        return c == UNION_OPERATOR || c == KLEENE_STAR_OPERATOR || c == PLUS_OPERATOR || c == CONCATENATION_OPERATOR ||
+               c == LEFT_PARENTHESIS || c == RIGHT_PARENTHESIS;
     }
 
     int precedence(char op) {
-        if (op == '*' || op == '+') return 3;
-        if (op == '?') return 2;//concatenation
-        if (op == '|') return 1;
+        if (op == KLEENE_STAR_OPERATOR || op == PLUS_OPERATOR) return 3;
+        if (op == CONCATENATION_OPERATOR) return 2;//concatenation
+        if (op == UNION_OPERATOR) return 1;
         return 0;
     }
 
@@ -23,17 +25,17 @@ public:
 
         for (int i = 0; i < reStr.size(); i++) {
             char c = reStr[i];
-            if (c == '\\') {
+            if (c == ESCAPE_CHARACTER) {
                 output += c;
                 if (i + 1 < reStr.size()) {
                     output += reStr[++i];
                 }
-            } else if (isalnum(c) || c == '\0' ||!isOperator(c)) {
+            } else if (isalnum(c) || c == EPSILON || !isOperator(c)) {
                 output += c;
-            } else if (c == '(') {
+            } else if (c == LEFT_PARENTHESIS) {
                 stack.push(c);
-            } else if (c == ')') {
-                while (!stack.empty() && stack.top() != '(') {
+            } else if (c == RIGHT_PARENTHESIS) {
+                while (!stack.empty() && stack.top() != LEFT_PARENTHESIS) {
                     output += stack.top();
                     stack.pop();
                 }

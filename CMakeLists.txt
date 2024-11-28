@@ -9,4 +9,5 @@ add_executable(complierGenerator main.cpp
         substitutions.cpp
         NFA.cpp
         NFAcreation.cpp
+        constants.h
 )

@@ -101,6 +101,13 @@
 				4,
 				5
 			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				6
+			]
 		}
 	],
 	"sources" : 
@@ -140,6 +147,11 @@
 			"compileGroupIndex" : 0,
 			"path" : "NFAcreation.cpp",
 			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "constants.h",
+			"sourceGroupIndex" : 1
 		}
 	],
 	"type" : "EXECUTABLE"

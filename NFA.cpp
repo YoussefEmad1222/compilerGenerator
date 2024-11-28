@@ -1,7 +1,4 @@
-#include <iostream>
-#include <unordered_map>
-#include <vector>
-#include <string>
+#include "constants.h"
 
 using namespace std;
 
@@ -29,6 +26,11 @@ public:
         nameIfFinal = name;
     }
 
+    void removeFinal() {
+        isFinal = false;
+        nameIfFinal = "";
+    }
+
     long long getID() const {
         return id;
     }
@@ -38,9 +40,13 @@ public:
     }
 
     string getNameIfFinal() const {
+        if (nameIfFinal.empty()) {
+            return "";
+        }
         return nameIfFinal;
     }
-    auto getTransitions()  {
+
+    auto getTransitions() {
         return transitions;
     }
 
@@ -69,16 +75,17 @@ public:
         end = new stateNFA(globalStateID++);
         start->addTransition('\0', end);
     }
+
     NFA() = default;
 
     NFA(stateNFA *start, stateNFA *end) : start(start), end(end) {}
 
 
-    stateNFA* getStart() const {
+    stateNFA *getStart() const {
         return start;
     }
 
-    stateNFA* getEnd() const {
+    stateNFA *getEnd() const {
         return end;
     }
 };
@@ -116,7 +123,6 @@ public:
         stateNFA *startState = new stateNFA(globalStateID++);
         stateNFA *endState = new stateNFA(globalStateID++);
         startState->addTransition(c, endState);
-        endState->setFinal(string(1, c));
         return NFA(startState, endState);
     }
 };
