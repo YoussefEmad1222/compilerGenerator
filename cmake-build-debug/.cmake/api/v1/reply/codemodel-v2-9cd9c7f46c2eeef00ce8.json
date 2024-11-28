@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/20100/CLionProjects/complierGenerator/cmake-build-debug",
-		"source" : "C:/Users/20100/CLionProjects/complierGenerator"
+		"build" : "C:/Users/20100/Documents/GitHub/compilerGenerator/cmake-build-debug",
+		"source" : "C:/Users/20100/Documents/GitHub/compilerGenerator"
 	},
 	"version" : 
 	{

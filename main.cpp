@@ -12,7 +12,6 @@ int main() {
     regexLoader.printAll();
     nfaCreation nfaCreator;
     nfaCreator.createRegexNFAs(regexLoader.expressions, regexLoader.orderedExpressions);
-    nfaCreator.printAllStates();
     return 0;
 
 }
