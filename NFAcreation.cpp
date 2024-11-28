@@ -61,11 +61,22 @@ public:
         regexNFAs.clear();
     }
 
-    void createRegexNFAs(unordered_map<string, string> &regex, vector<string> &orderedRegex) {
+    void createRegexNFAs(unordered_map<string, string> &regex, vector<string> &orderedRegex,
+                         vector<string> &keywords, vector<string> &punctuations) {
         for (const string &orderedReg: orderedRegex) {
             NFA nfa = thompsonConstruction(regex[orderedReg], orderedReg);
             regexNFAs[orderedReg] = nfa;
         }
+
+        for (const string &keyword: keywords) {
+            NFA nfa = thompsonConstruction(keyword, keyword);
+            regexNFAs[keyword] = nfa;
+        }
+        for (const string &punctuation: punctuations) {
+            NFA nfa = thompsonConstruction(punctuation, punctuation);
+            regexNFAs[punctuation] = nfa;
+        }
+
     }
 
     void printState(stateNFA &nfa, unordered_set<long long> &set, int indent = 0) {

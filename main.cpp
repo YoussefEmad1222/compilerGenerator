@@ -11,7 +11,8 @@ int main() {
     regexLoader.readLexicalRules("../input/regex_rules.txt");
     regexLoader.printAll();
     nfaCreation nfaCreator;
-    nfaCreator.createRegexNFAs(regexLoader.expressions, regexLoader.orderedExpressions);
+    nfaCreator.createRegexNFAs(regexLoader.expressions, regexLoader.orderedExpressions, regexLoader.keywords, regexLoader.punctuations);
+    nfaCreator.printAllStates();
     return 0;
 
 }

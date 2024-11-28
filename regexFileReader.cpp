@@ -134,26 +134,41 @@ public:
         for (int i = 0; i < orderedExpressions.size(); i++) {
             expressions[orderedExpressions[i]] = convertor.infixToPostfix(expressions[orderedExpressions[i]]);
         }
+        for (int i = 0; i < keywords.size(); i++) {
+            keywords[i] = convertor.infixToPostfix(keywords[i]);
+        }
+        for (int i = 0; i < punctuations.size(); i++) {
+            punctuations[i] = convertor.infixToPostfix(punctuations[i]);
+        }
+    }
+
+    string concatRegex(string expression) {
+        string newExpression;
+        size_t length = expression.size();
+
+        for (int i = 0; i < length; ++i) {
+            char currentChar = expression[i];
+            char nextChar = (i + 1 < length) ? expression[i + 1] : '\0';
+
+            newExpression.push_back(currentChar);
+
+            if (isConcatNeeded(currentChar, nextChar)) {
+                newExpression.push_back(CONCATENATION_OPERATOR);
+            }
+        }
+        return newExpression;
     }
 
     void addConcat() {
         for (const auto &expressionName: orderedExpressions) {
-            string &expression = expressions[expressionName];
-            string newExpression;
-            size_t length = expression.size();
+            expressions[expressionName] = concatRegex(expressions[expressionName]);
+        }
+        for (int i = 0; i < keywords.size(); i++) {
 
-            for (int i = 0; i < length; ++i) {
-                char currentChar = expression[i];
-                char nextChar = (i + 1 < length) ? expression[i + 1] : '\0';
-
-                newExpression.push_back(currentChar);
-
-                if (isConcatNeeded(currentChar, nextChar)) {
-                    newExpression.push_back(CONCATENATION_OPERATOR);
-                }
-            }
-
-            expressions[expressionName] = newExpression;
+            keywords[i] = concatRegex(keywords[i]);
+        }
+        for (int i = 0; i < punctuations.size(); i++) {
+            punctuations[i] = concatRegex(punctuations[i]);
         }
     }
 

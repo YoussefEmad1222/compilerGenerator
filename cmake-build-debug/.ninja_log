@@ -14,3 +14,14 @@
 111	4799	7545035526884082	CMakeFiles/complierGenerator.dir/NFAcreation.cpp.obj	5f2d206591854de1
 54	6463	7545035526312070	CMakeFiles/complierGenerator.dir/main.cpp.obj	f35108e1a8522d6a
 6463	7254	7545035590406816	complierGenerator.exe	4b0cd46dbe61da7b
+44	3669	7545117098674512	CMakeFiles/complierGenerator.dir/NFA.cpp.obj	497a026724e64b84
+49	3776	7545117098724492	CMakeFiles/complierGenerator.dir/NFAcreation.cpp.obj	5f2d206591854de1
+39	4385	7545117098626341	CMakeFiles/complierGenerator.dir/main.cpp.obj	f35108e1a8522d6a
+4385	4894	7545117142081003	complierGenerator.exe	4b0cd46dbe61da7b
+19	2046	7545126109619974	CMakeFiles/complierGenerator.dir/regexFileReader.cpp.obj	176e577d8fd317e6
+25	2132	7545126109679966	CMakeFiles/complierGenerator.dir/NFAcreation.cpp.obj	5f2d206591854de1
+12	2897	7545126109544860	CMakeFiles/complierGenerator.dir/main.cpp.obj	f35108e1a8522d6a
+2897	3417	7545126138393412	complierGenerator.exe	4b0cd46dbe61da7b
+17	1899	7545132050074598	CMakeFiles/complierGenerator.dir/regexFileReader.cpp.obj	176e577d8fd317e6
+11	2694	7545132050019494	CMakeFiles/complierGenerator.dir/main.cpp.obj	f35108e1a8522d6a
+2694	3165	7545132076841790	complierGenerator.exe	4b0cd46dbe61da7b
