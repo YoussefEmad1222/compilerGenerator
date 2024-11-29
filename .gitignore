@@ -2,3 +2,8 @@
 
 # Ignore the cmake folder
 cmake/
+cmake-build-debug/
+CMakeFiles/
+CMakeScripts/
+CMakeCache.txt
+.idea/
