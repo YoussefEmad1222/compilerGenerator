@@ -4,12 +4,13 @@ using namespace std;
 
 class stateNFA {
     long long id;
-    unordered_map<char, vector<stateNFA *>> transitions;
+    unordered_map<char, vector<stateNFA *> > transitions;
     bool isFinal;
     string nameIfFinal;
 
 public:
-    stateNFA(long long id) : id(id), isFinal(false), nameIfFinal("") {}
+    stateNFA(long long id) : id(id), isFinal(false), nameIfFinal("") {
+    }
 
     void addTransition(char c, stateNFA *state) {
         transitions[c].push_back(state);
@@ -78,7 +79,8 @@ public:
 
     NFA() = default;
 
-    NFA(stateNFA *start, stateNFA *end) : start(start), end(end) {}
+    NFA(stateNFA *start, stateNFA *end) : start(start), end(end) {
+    }
 
 
     stateNFA *getStart() const {
@@ -93,7 +95,10 @@ public:
 class nfaOperations {
 public:
     NFA concatenationNFA(NFA &nfa1, NFA &nfa2) {
-        nfa1.getEnd()->addTransition(EPSILON, nfa2.getStart());
+        //move the transitions from the start state of nfa2 to the end state of nfa1
+        for (auto &transition: nfa2.getStart()->getTransitions()) {
+            nfa1.getEnd()->addTransitions(transition.first, transition.second);
+        }
         return NFA(nfa1.getStart(), nfa2.getEnd());
     }
 
