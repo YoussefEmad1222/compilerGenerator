@@ -7,6 +7,11 @@ using namespace std;
 
 class RegularFileReader {
 public:
+    bool isOperator(char c) {
+        return c == UNION_OPERATOR || c == KLEENE_STAR_OPERATOR || c == PLUS_OPERATOR || c == CONCATENATION_OPERATOR ||
+               c == LEFT_PARENTHESIS || c == RIGHT_PARENTHESIS;
+    }
+
     unordered_map<string, string> expressions;
     vector<string> orderedExpressions;
     unordered_map<string, string> definitions;
@@ -21,10 +26,9 @@ public:
         orderedDefinition.clear();
         keywords.clear();
         punctuations.clear();
-
     }
 
-// Trim whitespace from the left
+    // Trim whitespace from the left
     string ltrim(const string &s) {
         size_t start = s.find_first_not_of(" \t\n\r\f\v");
         return (start == string::npos) ? "" : s.substr(start);
@@ -142,6 +146,20 @@ public:
         }
     }
 
+    bool isConcatNeeded(char currentChar, char nextChar, char prevChar) {
+        if (nextChar == '\0') return false;
+        // If the current character is an operand and the next character is an operand or a left parenthesis
+        bool isCurrent = !isOperator(currentChar) || currentChar == RIGHT_PARENTHESIS || currentChar == KLEENE_STAR_OPERATOR || currentChar == PLUS_OPERATOR;
+        isCurrent = isCurrent && currentChar != ESCAPE_CHARACTER;
+        bool isNextOperand = !isOperator(nextChar) || nextChar == LEFT_PARENTHESIS || nextChar == ESCAPE_CHARACTER;
+        //check if the previous character is escape character
+        if (prevChar == ESCAPE_CHARACTER) {
+            isCurrent = true;
+        }
+
+        return isCurrent && isNextOperand;
+    }
+
     string concatRegex(string expression) {
         string newExpression;
         size_t length = expression.size();
@@ -149,10 +167,11 @@ public:
         for (int i = 0; i < length; ++i) {
             char currentChar = expression[i];
             char nextChar = (i + 1 < length) ? expression[i + 1] : '\0';
+            char prevChar = (i - 1 >= 0) ? expression[i - 1] : '\0';
 
             newExpression.push_back(currentChar);
 
-            if (isConcatNeeded(currentChar, nextChar)) {
+            if (isConcatNeeded(currentChar, nextChar, prevChar)) {
                 newExpression.push_back(CONCATENATION_OPERATOR);
             }
         }
@@ -164,7 +183,6 @@ public:
             expressions[expressionName] = concatRegex(expressions[expressionName]);
         }
         for (int i = 0; i < keywords.size(); i++) {
-
             keywords[i] = concatRegex(keywords[i]);
         }
         for (int i = 0; i < punctuations.size(); i++) {
@@ -172,14 +190,6 @@ public:
         }
     }
 
-    bool isConcatNeeded(char currentChar, char nextChar) {
-        if (nextChar == '\0') return false;
-        bool concatNeeded = (isalnum(currentChar) || currentChar == RIGHT_PARENTHESIS ||
-                             currentChar == KLEENE_STAR_OPERATOR || currentChar == PLUS_OPERATOR);
-        concatNeeded = concatNeeded && (isalnum(nextChar) || nextChar == LEFT_PARENTHESIS);
-        concatNeeded = concatNeeded || nextChar == ESCAPE_CHARACTER && currentChar != LEFT_PARENTHESIS;
-        return concatNeeded;
-    }
 
     void readLexicalRules(const string &filename) {
         ifstream file("../input/" + filename);
@@ -212,7 +222,6 @@ public:
             expressions[orderedExpressions[i]] = expanded;
             substitutions.insert(orderedExpressions[i]);
         }
-
     }
 
     void printAll() {
@@ -236,6 +245,4 @@ public:
             cout << punctuation << " ";
         }
     }
-
-
 };
