@@ -1,4 +1,4 @@
-#include "NFA.cpp"
+#include "NFA.h"
 #include "constants.h"
 #include <functional>
 
@@ -93,14 +93,14 @@ public:
         }
     }
 
-    NFA *combineNFAs() {
+    NFA combineNFAs() {
         const auto newStart = new stateNFA(globalStateID++);
 
         for (const auto &[fst, snd]: regexNFAs) {
             newStart->addTransition(EPSILON, snd.getStart());
         }
 
-        return new NFA(newStart, nullptr);
+        return NFA(newStart, nullptr);
     }
 
     void printState(stateNFA &nfa, unordered_set<long long> &set, int indent = 0) {
