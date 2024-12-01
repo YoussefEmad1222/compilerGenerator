@@ -6,19 +6,8 @@
 
 #include "constants.h"
 
-// TODO: change this to take NFA in its current form and create the needed data structures
-// TODO: Handle final states by names and priority
-DFACreator::DFACreator(
-    ll &nStart,
-     unordered_set<ll> &nAccept,
-    map<pair<ll, char>, set<ll> > &nTransitions,
-     set<char> &inputs)
-    : nStart(nStart),
-      nAccept(nAccept),
-      nTransitions(nTransitions),
-      inputs(inputs) {}
 
-DFACreator::DFACreator(const NFA nfa): nStart(), nAccept(), nTransitions(), inputs() {
+DFACreator::DFACreator(const NFA nfa): nStart() {
     // Start state
     nStart = nfa.getStart()->getID();
 
@@ -38,7 +27,7 @@ DFACreator::DFACreator(const NFA nfa): nStart(), nAccept(), nTransitions(), inpu
 
         // If the state is final, add it to the accepting states
         if (current->isFinalState()) {
-            nAccept.insert(currentID);
+            nAccept[currentID] = {current->getPriority(), current->getNameIfFinal()};
         }
 
         // Process transitions
@@ -59,22 +48,60 @@ DFACreator::DFACreator(const NFA nfa): nStart(), nAccept(), nTransitions(), inpu
     }
 }
 
+void DFACreator::writeAllStatesToFile(const string &filename) {
+    ofstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Failed to open file: " << filename << endl;
+        return;
+    }
+
+    unordered_set<ll> states;
+    for (const auto &[fst, snd]: dfa.transitions) {
+        states.insert(fst.first);
+    }
+
+    // States
+    file << "States: ";
+    for (const auto &state: states) {
+        file << state << " ";
+    }
+    file << endl;
+
+    // Accepting States
+    file << "Accepting States: ";
+    for (const auto &[fst, snd]: dfa.acceptStates) {
+        file << fst << " ";
+    }
+    file << endl;
+
+    // Transitions current,next,input
+    for (const auto &[fst, snd]: dfa.transitions) {
+        file << fst.first << "," << snd << "," << string(1, fst.second) << endl;
+    }
+
+    file.close();
+}
+
 /*
  * This method implements subset construction algorithm to convert NFA to DFA
  * Returns the final DFA
  */
-DFA DFACreator::getDFA() const {
+void DFACreator::createDFA() {
     map<set<ll>, ll> dStates;
     map<pair<ll, char>, ll> dTransitions;
     queue<set<ll>> unmarked;
-    set<ll> dAccept;
+    unordered_map<long long, string> dAccept;
     int id = 0;
 
     // Initialize DFA with start state and its eps-closure
-    const set<ll> startStates = eps_closure(set{nStart}, nTransitions);
+    const set<ll> startStates = eps_closure(set{nStart});
     dStates[startStates] = id++;
     unmarked.push(startStates);
     ll dStart = dStates[startStates];
+
+    // Remove epsilon from the set of available inputs
+    // No eps transitions in DFA
+    inputs.erase(EPSILON);
 
     // Loop till marking (processing) all states in DFA
     while(!unmarked.empty()) {
@@ -82,20 +109,25 @@ DFA DFACreator::getDFA() const {
         unmarked.pop();
 
         for(const auto& input : inputs) {
-            if(input == EPSILON) // No eps transitions in DFA
-                continue;
-
-            set<ll> e_closure = eps_closure(move(state, input, nTransitions), nTransitions);
+            set<ll> e_closure = eps_closure(move(state, input));
             if(!e_closure.empty() && dStates.find(e_closure) == dStates.end()) {
-                dStates[e_closure] = id++;
+                const int stateId = id++;
+                dStates[e_closure] = stateId;
                 unmarked.push(e_closure);
 
                 // Mark state as accepting if at least one of its elements is accepting
-                for(const auto& s: e_closure) {
+                vector<pair<int, string>> acceptingStates;
+                for(auto s: e_closure) {
                     if(nAccept.find(s) != nAccept.end()) {
-                        dAccept.insert(dStates[e_closure]);
-                        break;
+                        acceptingStates.push_back({nAccept[s].first, nAccept[s].second});
                     }
+                }
+
+                // Sort by priority
+                sort(acceptingStates.rbegin(), acceptingStates.rend());
+                // Set final state as the state of highest priority
+                if(acceptingStates.size() != 0) {
+                    dAccept[stateId] = acceptingStates.begin()->second;
                 }
             }
 
@@ -104,13 +136,17 @@ DFA DFACreator::getDFA() const {
         }
     }
 
-    return {dStart, dAccept, inputs, dTransitions};
+    dfa = {dStart, dAccept, inputs, dTransitions};
+}
+
+DFA DFACreator::getDFA() {
+    return dfa;
 }
 
 /*
  * Returns the set of states with epsilon transitions from "states" in the given NFA
  */
-set<ll> DFACreator::eps_closure(const set<ll> &states, map<pair<ll, char>, set<ll>> nTransitions) {
+set<ll> DFACreator::eps_closure(const set<ll> &states) {
     stack<ll> stack;
     set<ll> e_closure;
 
@@ -134,7 +170,7 @@ set<ll> DFACreator::eps_closure(const set<ll> &states, map<pair<ll, char>, set<l
 /*
  * Returns next states from the transition of "states" under "input" in the given NFA
  */
-set<ll> DFACreator::move(const set<ll>& states, const char& input, map<pair<ll, char>, set<ll>> nTransitions) {
+set<ll> DFACreator::move(const set<ll>& states, const char& input) {
     set<ll> nextStates;
     for(const auto& state : states) {
         for(const auto& u : nTransitions[{state, input}]) {

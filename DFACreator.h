@@ -8,7 +8,7 @@
 #include <bits/stdc++.h>
 
 #include "DFA.h"
-#include "NFA.cpp"
+#include "NFA.h"
 
 #define ll long long
 
@@ -16,21 +16,20 @@ using namespace std;
 
 class DFACreator {
 public:
-    DFACreator(long long &nStart, unordered_set<long long> &nAccept,
-               map<pair<long long, char>, set<long long>> &nTransitions, set<char> &inputs);
-
-    explicit DFACreator(NFA nfa);
-    DFA getDFA() const;
+    explicit DFACreator(const NFA nfa);
+    void writeAllStatesToFile(const string &filename);
+    void createDFA();
+    DFA getDFA();
 
 private:
-    ll& nStart;
-    unordered_set<ll>& nAccept;
-    map<pair<ll, char>, set<ll>>& nTransitions;
-    set<char>& inputs;
+    ll nStart;
+    unordered_map<ll, pair<int, string>> nAccept;
+    map<pair<ll, char>, set<ll>> nTransitions;
+    unordered_set<char> inputs;
+    DFA dfa;
 
-    static set<ll> eps_closure(const set<ll> &states, map<pair<ll, char>, set<ll>> nTransitions);
-
-    static set<ll> move(const set<ll>& states, const char& input, map<pair<ll, char>, set<ll>> nTransitions);
+    set<ll> eps_closure(const set<ll> &states);
+    set<ll> move(const set<ll>& states, const char& input);
 };
 
 
