@@ -24,31 +24,25 @@ class nfaCreation {
                     break;
                 }
                 case UNION_OPERATOR: {
-                    NFA nfa1 = nfaStack.top();
-                    nfaStack.pop();
-                    NFA nfa2 = nfaStack.top();
-                    nfaStack.pop();
+                    NFA nfa1 = nfaStack.top();nfaStack.pop();
+                    NFA nfa2 = nfaStack.top();nfaStack.pop();
                     nfaStack.push(operations.unionNFA(nfa1, nfa2, globalStateID));
                     break;
                 }
                 case PLUS_OPERATOR: {
                     // One or more closure
-                    NFA nfa = nfaStack.top();
-                    nfaStack.pop();
+                    NFA nfa = nfaStack.top();nfaStack.pop();
                     nfaStack.push(operations.oneOrMore_closureNFA(nfa, globalStateID));
                     break;
                 }
                 case KLEENE_STAR_OPERATOR: {
-                    NFA nfa = nfaStack.top();
-                    nfaStack.pop();
+                    NFA nfa = nfaStack.top();nfaStack.pop();
                     nfaStack.push(operations.kleene_closureNFA(nfa, globalStateID));
                     break;
                 }
                 case CONCATENATION_OPERATOR: {
-                    NFA nfa2 = nfaStack.top();
-                    nfaStack.pop();
-                    NFA nfa1 = nfaStack.top();
-                    nfaStack.pop();
+                    NFA nfa2 = nfaStack.top();nfaStack.pop();
+                    NFA nfa1 = nfaStack.top();nfaStack.pop();
                     nfaStack.push(operations.concatenationNFA(nfa1, nfa2));
                     break;
                 }
