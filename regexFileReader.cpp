@@ -148,11 +148,10 @@ public:
 
     bool isConcatNeeded(char currentChar, char nextChar, char prevChar) {
         if (nextChar == '\0') return false;
-        // If the current character is an operand and the next character is an operand or a left parenthesis
-        bool isCurrent = !isOperator(currentChar) || currentChar == RIGHT_PARENTHESIS || currentChar == KLEENE_STAR_OPERATOR || currentChar == PLUS_OPERATOR;
+        bool isCurrent = !isOperator(currentChar) || currentChar == RIGHT_PARENTHESIS || currentChar ==
+                         KLEENE_STAR_OPERATOR || currentChar == PLUS_OPERATOR;
         isCurrent = isCurrent && currentChar != ESCAPE_CHARACTER;
         bool isNextOperand = !isOperator(nextChar) || nextChar == LEFT_PARENTHESIS || nextChar == ESCAPE_CHARACTER;
-        //check if the previous character is escape character
         if (prevChar == ESCAPE_CHARACTER) {
             isCurrent = true;
         }

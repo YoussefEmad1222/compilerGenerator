@@ -95,12 +95,15 @@ public:
 class nfaOperations {
 public:
     NFA concatenationNFA(NFA &nfa1, NFA &nfa2) {
-        //move the transitions from the start state of nfa2 to the end state of nfa1
-        for (auto &transition: nfa2.getStart()->getTransitions()) {
-            nfa1.getEnd()->addTransitions(transition.first, transition.second);
+        stateNFA* endState = nfa1.getEnd();
+        stateNFA* startState = nfa2.getStart();
+        for (const auto& transition : endState->getTransitions()) {
+            startState->addTransitions(transition.first, transition.second);
         }
+        endState->addTransition(EPSILON, startState);
         return NFA(nfa1.getStart(), nfa2.getEnd());
     }
+
 
     NFA unionNFA(NFA &nfa1, NFA &nfa2, long long &globalStateID) {
         stateNFA *newStart = new stateNFA(globalStateID++);

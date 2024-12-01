@@ -29,12 +29,19 @@ class nfaCreation {
                     nfaStack.push(operations.unionNFA(nfa1, nfa2, globalStateID));
                     break;
                 }
-                case PLUS_OPERATOR:
-                    nfaStack.push(operations.oneOrMore_closureNFA(nfaStack.top(), globalStateID));
+                case PLUS_OPERATOR: {
+                    // One or more closure
+                    NFA nfa = nfaStack.top();
+                    nfaStack.pop();
+                    nfaStack.push(operations.oneOrMore_closureNFA(nfa, globalStateID));
                     break;
-                case KLEENE_STAR_OPERATOR:
-                    nfaStack.push(operations.kleene_closureNFA(nfaStack.top(), globalStateID));
+                }
+                case KLEENE_STAR_OPERATOR: {
+                    NFA nfa = nfaStack.top();
+                    nfaStack.pop();
+                    nfaStack.push(operations.kleene_closureNFA(nfa, globalStateID));
                     break;
+                }
                 case CONCATENATION_OPERATOR: {
                     NFA nfa2 = nfaStack.top();
                     nfaStack.pop();
@@ -53,7 +60,6 @@ class nfaCreation {
         resultNFA.getEnd()->setFinal(name);
         return resultNFA;
     }
-
 
 public:
     nfaCreation() {
@@ -76,7 +82,6 @@ public:
             NFA nfa = thompsonConstruction(punctuation, punctuation);
             regexNFAs[punctuation] = nfa;
         }
-
     }
 
     void printState(stateNFA &nfa, unordered_set<long long> &set, int indent = 0) {
@@ -85,7 +90,7 @@ public:
 
         string indentation(indent, ' ');
         cout << indentation << "State ID: " << nfa.getID()
-             << (!nfa.getNameIfFinal().empty() ? " (Final: " + nfa.getNameIfFinal() + ")" : "") << endl;
+                << (!nfa.getNameIfFinal().empty() ? " (Final: " + nfa.getNameIfFinal() + ")" : "") << endl;
 
         if (nfa.getTransitions().empty()) {
             cout << indentation << "  NO TRANSITIONS" << endl;
@@ -125,5 +130,11 @@ public:
         cout << "Printing all states: " << endl;
         unordered_set<long long> visited;
         printPaths(regexNFAs, visited);
+    }
+
+    void printPath(string name) {
+        cout << "Printing path for: " << name << endl;
+        unordered_set<long long> visited;
+        printState(*regexNFAs[name].getStart(), visited);
     }
 };
