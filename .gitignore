@@ -2,8 +2,17 @@
 
 # Ignore the cmake folder
 cmake/
-cmake-build-debug/
 CMakeFiles/
 CMakeScripts/
 CMakeCache.txt
 .idea/
+cmake-build-debug/
+cmake-build-debug/.ninja_deps
+cmake-build-debug/.ninja_log
+cmake-build-debug/CMakeCache.txt
+cmake-build-debug/CMakeFiles/complierGenerator.dir/main.cpp.obj
+cmake-build-debug/CMakeFiles/rules.ninja
+cmake-build-debug/Testing/Temporary/LastTest.log
+cmake-build-debug/build.ninja
+cmake-build-debug/cmake_install.cmake
+cmake-build-debug/complierGenerator.exe

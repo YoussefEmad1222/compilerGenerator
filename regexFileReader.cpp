@@ -7,6 +7,11 @@ using namespace std;
 
 class RegularFileReader {
 public:
+    bool isOperator(char c) {
+        return c == UNION_OPERATOR || c == KLEENE_STAR_OPERATOR || c == PLUS_OPERATOR || c == CONCATENATION_OPERATOR ||
+               c == LEFT_PARENTHESIS || c == RIGHT_PARENTHESIS;
+    }
+
     unordered_map<string, string> expressions;
     vector<string> orderedExpressions;
     unordered_map<string, string> definitions;
@@ -21,25 +26,15 @@ public:
         orderedDefinition.clear();
         keywords.clear();
         punctuations.clear();
-
     }
 
-// Trim whitespace from the left
-    string ltrim(const string &s) {
-        size_t start = s.find_first_not_of(" \t\n\r\f\v");
-        return (start == string::npos) ? "" : s.substr(start);
-    }
 
-    // Trim whitespace from the right
-    string rtrim(const string &s) {
-        size_t end = s.find_last_not_of(" \t\n\r\f\v");
-        return (end == string::npos) ? "" : s.substr(0, end + 1);
-    }
-
-    // Trim from both ends
     string trim(const string &s) {
-        return rtrim(ltrim(s));
+        size_t startPos = s.find_first_not_of(" \t\n\r\f\v");
+        size_t endPos = s.find_last_not_of(" \t\n\r\f\v");
+        return (startPos == string::npos || endPos == string::npos) ? "" : s.substr(startPos, endPos - startPos + 1);
     }
+
 
     void splitBySpace(const string &line, vector<string> &tokens) {
         stringstream ss(line);
@@ -52,7 +47,7 @@ public:
 
     string expandRangeOperation(string regex) {
         string expanded;
-        int n = regex.length();
+        int length = regex.length();
 
         auto isRange = [](char start, char end) {
             return start <= end;
@@ -69,9 +64,9 @@ public:
             return result;
         };
 
-        for (int i = 0; i < n; ++i) {
-            if (isalnum(regex[i]) && i + 1 < n && regex[i + 1] == '-') {
-                if (i + 2 < n && isalnum(regex[i + 2])) {
+        for (int i = 0; i < length; ++i) {
+            if (isalnum(regex[i]) && i + 1 < length && regex[i + 1] == '-') {
+                if (i + 2 < length && isalnum(regex[i + 2])) {
                     char startChar = regex[i];
                     char endChar = regex[i + 2];
                     if (isRange(startChar, endChar)) {
@@ -142,6 +137,19 @@ public:
         }
     }
 
+    bool isConcatNeeded(char currentChar, char nextChar, char prevChar) {
+        if (nextChar == '\0') return false;
+        bool isCurrent = !isOperator(currentChar) || currentChar == RIGHT_PARENTHESIS || currentChar ==
+                         KLEENE_STAR_OPERATOR || currentChar == PLUS_OPERATOR;
+        isCurrent = isCurrent && currentChar != ESCAPE_CHARACTER;
+        bool isNextOperand = !isOperator(nextChar) || nextChar == LEFT_PARENTHESIS || nextChar == ESCAPE_CHARACTER;
+        if (prevChar == ESCAPE_CHARACTER) {
+            isCurrent = true;
+        }
+
+        return isCurrent && isNextOperand;
+    }
+
     string concatRegex(string expression) {
         string newExpression;
         size_t length = expression.size();
@@ -149,10 +157,11 @@ public:
         for (int i = 0; i < length; ++i) {
             char currentChar = expression[i];
             char nextChar = (i + 1 < length) ? expression[i + 1] : '\0';
+            char prevChar = (i - 1 >= 0) ? expression[i - 1] : '\0';
 
             newExpression.push_back(currentChar);
 
-            if (isConcatNeeded(currentChar, nextChar)) {
+            if (isConcatNeeded(currentChar, nextChar, prevChar)) {
                 newExpression.push_back(CONCATENATION_OPERATOR);
             }
         }
@@ -164,7 +173,6 @@ public:
             expressions[expressionName] = concatRegex(expressions[expressionName]);
         }
         for (int i = 0; i < keywords.size(); i++) {
-
             keywords[i] = concatRegex(keywords[i]);
         }
         for (int i = 0; i < punctuations.size(); i++) {
@@ -172,14 +180,6 @@ public:
         }
     }
 
-    bool isConcatNeeded(char currentChar, char nextChar) {
-        if (nextChar == '\0') return false;
-        bool concatNeeded = (isalnum(currentChar) || currentChar == RIGHT_PARENTHESIS ||
-                             currentChar == KLEENE_STAR_OPERATOR || currentChar == PLUS_OPERATOR);
-        concatNeeded = concatNeeded && (isalnum(nextChar) || nextChar == LEFT_PARENTHESIS);
-        concatNeeded = concatNeeded || nextChar == ESCAPE_CHARACTER && currentChar != LEFT_PARENTHESIS;
-        return concatNeeded;
-    }
 
     void readLexicalRules(const string &filename) {
         ifstream file("../input/" + filename);
@@ -212,7 +212,6 @@ public:
             expressions[orderedExpressions[i]] = expanded;
             substitutions.insert(orderedExpressions[i]);
         }
-
     }
 
     void printAll() {
@@ -236,6 +235,4 @@ public:
             cout << punctuation << " ";
         }
     }
-
-
 };
