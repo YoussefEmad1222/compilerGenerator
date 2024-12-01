@@ -12,7 +12,7 @@ int main() {
     regexLoader.printAll();
     nfaCreation nfaCreator;
     nfaCreator.createRegexNFAs(regexLoader.expressions, regexLoader.orderedExpressions, regexLoader.keywords, regexLoader.punctuations);
-    nfaCreator.printPath("id");
+    nfaCreator.writeAllStatesToFile("../nfa.txt");
     return 0;
 
 }

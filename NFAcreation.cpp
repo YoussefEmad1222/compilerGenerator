@@ -5,6 +5,8 @@
 class nfaCreation {
     long long globalStateID = 0;
     unordered_map<string, NFA> regexNFAs;
+    ofstream out;
+    unordered_set<long long> allStates;
 
     NFA thompsonConstruction(string postfixRegex, string name) {
         stack<NFA> nfaStack;
@@ -61,6 +63,16 @@ class nfaCreation {
         return resultNFA;
     }
 
+    string removeConcat(string regex) {
+        string newRegex;
+        for (char c: regex) {
+            if (c != CONCATENATION_OPERATOR) {
+                newRegex += c;
+            }
+        }
+        return newRegex;
+    }
+
 public:
     nfaCreation() {
         globalStateID = 0;
@@ -75,11 +87,13 @@ public:
         }
 
         for (const string &keyword: keywords) {
-            NFA nfa = thompsonConstruction(keyword, keyword);
+            string orgKeyword = removeConcat(keyword);
+            NFA nfa = thompsonConstruction(keyword, orgKeyword);
             regexNFAs[keyword] = nfa;
         }
         for (const string &punctuation: punctuations) {
-            NFA nfa = thompsonConstruction(punctuation, punctuation);
+            string orgPunctuation = removeConcat(punctuation);
+            NFA nfa = thompsonConstruction(punctuation, orgPunctuation);
             regexNFAs[punctuation] = nfa;
         }
     }
@@ -136,5 +150,79 @@ public:
         cout << "Printing path for: " << name << endl;
         unordered_set<long long> visited;
         printState(*regexNFAs[name].getStart(), visited);
+    }
+
+        void writeState(stateNFA &nfa, unordered_set<long long> &set, ofstream &file) {
+        if (set.find(nfa.getID()) != set.end()) return;
+        set.insert(nfa.getID());
+
+        for (const auto &transition: nfa.getTransitions()) {
+            for (const auto &state: transition.second) {
+                file << nfa.getID() << "," << state->getID() << "," << (transition.first == EPSILON ? "EPSILON" : string(1, transition.first)) << endl;
+            }
+        }
+
+        for (const auto &transition: nfa.getTransitions()) {
+            for (const auto &state: transition.second) {
+                writeState(*state, set, file);
+            }
+        }
+    }
+
+    void writePaths(unordered_map<string, NFA> &regexNfa, unordered_set<long long> &set, ofstream &file) {
+        for (const auto &regexNFA: regexNfa) {
+            writeState(*regexNFA.second.getStart(), set, file);
+        }
+    }
+
+    void writeAllStatesToFile(const string &filename) {
+        ofstream file(filename);
+        if (!file.is_open()) {
+            cerr << "Failed to open file: " << filename << endl;
+            return;
+        }
+
+        unordered_set<long long> visited;
+        unordered_set<long long> acceptingStates;
+
+        // Collect all states and accepting states
+        for (const auto &regexNFA: regexNFAs) {
+            collectStates(*regexNFA.second.getStart(), visited, acceptingStates);
+        }
+
+        // Write all states
+        file << "States: ";
+        for (const auto &state: visited) {
+            file << state << " ";
+        }
+        file << endl;
+
+        // Write accepting states
+        file << "Accepting States: ";
+        for (const auto &state: acceptingStates) {
+            file << state << " ";
+        }
+        file << endl;
+
+        // Write transitions
+        visited.clear();
+        writePaths(regexNFAs, visited, file);
+
+        file.close();
+    }
+
+    void collectStates(stateNFA &nfa, unordered_set<long long> &visited, unordered_set<long long> &acceptingStates) {
+        if (visited.find(nfa.getID()) != visited.end()) return;
+        visited.insert(nfa.getID());
+
+        if (nfa.isFinalState()) {
+            acceptingStates.insert(nfa.getID());
+        }
+
+        for (const auto &transition: nfa.getTransitions()) {
+            for (const auto &state: transition.second) {
+                collectStates(*state, visited, acceptingStates);
+            }
+        }
     }
 };

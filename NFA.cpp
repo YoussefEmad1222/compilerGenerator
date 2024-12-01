@@ -97,13 +97,11 @@ public:
     NFA concatenationNFA(NFA &nfa1, NFA &nfa2) {
         stateNFA* endState = nfa1.getEnd();
         stateNFA* startState = nfa2.getStart();
-        for (const auto& transition : endState->getTransitions()) {
-            startState->addTransitions(transition.first, transition.second);
+        for (const auto& transition : startState->getTransitions()) {
+            endState->addTransitions(transition.first, transition.second);
         }
-        endState->addTransition(EPSILON, startState);
         return NFA(nfa1.getStart(), nfa2.getEnd());
     }
-
 
     NFA unionNFA(NFA &nfa1, NFA &nfa2, long long &globalStateID) {
         stateNFA *newStart = new stateNFA(globalStateID++);
