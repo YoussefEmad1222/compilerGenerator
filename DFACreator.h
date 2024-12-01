@@ -17,9 +17,9 @@ using namespace std;
 class DFACreator {
 public:
     explicit DFACreator(const NFA nfa);
-    void writeAllStatesToFile(const string &filename);
     void createDFA();
     DFA getDFA();
+    void writeAllStatesToFile(const string &filename);
 
 private:
     ll nStart;

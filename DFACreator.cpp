@@ -48,43 +48,9 @@ DFACreator::DFACreator(const NFA nfa): nStart() {
     }
 }
 
-void DFACreator::writeAllStatesToFile(const string &filename) {
-    ofstream file(filename);
-    if (!file.is_open()) {
-        cerr << "Failed to open file: " << filename << endl;
-        return;
-    }
-
-    unordered_set<ll> states;
-    for (const auto &[fst, snd]: dfa.transitions) {
-        states.insert(fst.first);
-    }
-
-    // States
-    file << "States: ";
-    for (const auto &state: states) {
-        file << state << " ";
-    }
-    file << endl;
-
-    // Accepting States
-    file << "Accepting States: ";
-    for (const auto &[fst, snd]: dfa.acceptStates) {
-        file << fst << " ";
-    }
-    file << endl;
-
-    // Transitions current,next,input
-    for (const auto &[fst, snd]: dfa.transitions) {
-        file << fst.first << "," << snd << "," << string(1, fst.second) << endl;
-    }
-
-    file.close();
-}
 
 /*
  * This method implements subset construction algorithm to convert NFA to DFA
- * Returns the final DFA
  */
 void DFACreator::createDFA() {
     map<set<ll>, ll> dStates;
@@ -139,9 +105,49 @@ void DFACreator::createDFA() {
     dfa = {dStart, dAccept, inputs, dTransitions};
 }
 
+
+/*
+ * Return the final DFA
+ */
 DFA DFACreator::getDFA() {
     return dfa;
 }
+
+
+void DFACreator::writeAllStatesToFile(const string &filename) {
+    ofstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Failed to open file: " << filename << endl;
+        return;
+    }
+
+    unordered_set<ll> states;
+    for (const auto &[fst, snd]: dfa.transitions) {
+        states.insert(fst.first);
+    }
+
+    // States
+    file << "States: ";
+    for (const auto &state: states) {
+        file << state << " ";
+    }
+    file << endl;
+
+    // Accepting States
+    file << "Accepting States: ";
+    for (const auto &[fst, snd]: dfa.acceptStates) {
+        file << fst << " ";
+    }
+    file << endl;
+
+    // Transitions current,next,input
+    for (const auto &[fst, snd]: dfa.transitions) {
+        file << fst.first << "," << snd << "," << string(1, fst.second) << endl;
+    }
+
+    file.close();
+}
+
 
 /*
  * Returns the set of states with epsilon transitions from "states" in the given NFA
@@ -166,6 +172,7 @@ set<ll> DFACreator::eps_closure(const set<ll> &states) {
 
     return e_closure;
 }
+
 
 /*
  * Returns next states from the transition of "states" under "input" in the given NFA
