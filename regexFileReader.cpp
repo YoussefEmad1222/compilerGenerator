@@ -28,22 +28,13 @@ public:
         punctuations.clear();
     }
 
-    // Trim whitespace from the left
-    string ltrim(const string &s) {
-        size_t start = s.find_first_not_of(" \t\n\r\f\v");
-        return (start == string::npos) ? "" : s.substr(start);
-    }
 
-    // Trim whitespace from the right
-    string rtrim(const string &s) {
-        size_t end = s.find_last_not_of(" \t\n\r\f\v");
-        return (end == string::npos) ? "" : s.substr(0, end + 1);
-    }
-
-    // Trim from both ends
     string trim(const string &s) {
-        return rtrim(ltrim(s));
+        size_t startPos = s.find_first_not_of(" \t\n\r\f\v");
+        size_t endPos = s.find_last_not_of(" \t\n\r\f\v");
+        return (startPos == string::npos || endPos == string::npos) ? "" : s.substr(startPos, endPos - startPos + 1);
     }
+
 
     void splitBySpace(const string &line, vector<string> &tokens) {
         stringstream ss(line);
@@ -56,7 +47,7 @@ public:
 
     string expandRangeOperation(string regex) {
         string expanded;
-        int n = regex.length();
+        int length = regex.length();
 
         auto isRange = [](char start, char end) {
             return start <= end;
@@ -73,9 +64,9 @@ public:
             return result;
         };
 
-        for (int i = 0; i < n; ++i) {
-            if (isalnum(regex[i]) && i + 1 < n && regex[i + 1] == '-') {
-                if (i + 2 < n && isalnum(regex[i + 2])) {
+        for (int i = 0; i < length; ++i) {
+            if (isalnum(regex[i]) && i + 1 < length && regex[i + 1] == '-') {
+                if (i + 2 < length && isalnum(regex[i + 2])) {
                     char startChar = regex[i];
                     char endChar = regex[i + 2];
                     if (isRange(startChar, endChar)) {
