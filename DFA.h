@@ -10,12 +10,15 @@ using namespace std;
 
 struct DFA {
     long long startState;
-    set<long long> acceptStates;
-    set<char> inputs;
+    unordered_map<long long, string> acceptStates;
+    unordered_set<char> inputs;
     map<pair<long long, char>, long long> transitions;
 
-    DFA(long long startState, set<long long> acceptStates, set<char> inputs,
-         map<pair<long long, char>, long long> transitions)
+    DFA(): startState(0) {
+    }
+
+    DFA(long long startState, unordered_map<long long, string> acceptStates, unordered_set<char> inputs,
+        map<pair<long long, char>, long long> transitions)
     : startState(std::move(startState)),
       acceptStates(std::move(acceptStates)),
       inputs(std::move(inputs)),
