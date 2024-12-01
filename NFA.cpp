@@ -7,6 +7,7 @@ class stateNFA {
     unordered_map<char, vector<stateNFA *> > transitions;
     bool isFinal;
     string nameIfFinal;
+    int priority;
 
 public:
     stateNFA(long long id) : id(id), isFinal(false), nameIfFinal("") {
@@ -22,9 +23,10 @@ public:
         }
     }
 
-    void setFinal(const string &name) {
+    void setFinal(const string &name, int priority) {
         isFinal = true;
         nameIfFinal = name;
+        this->priority = priority;
     }
 
     void removeFinal() {
@@ -46,6 +48,7 @@ public:
         }
         return nameIfFinal;
     }
+
 
     auto getTransitions() {
         return transitions;

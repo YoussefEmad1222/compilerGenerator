@@ -8,7 +8,7 @@ class nfaCreation {
     ofstream out;
     unordered_set<long long> allStates;
 
-    NFA thompsonConstruction(string postfixRegex, string name) {
+    NFA thompsonConstruction(string postfixRegex, string name, int priority) {
         stack<NFA> nfaStack;
         int n = postfixRegex.length();
         nfaOperations operations;
@@ -59,7 +59,7 @@ class nfaCreation {
             }
         }
         NFA resultNFA = nfaStack.top();
-        resultNFA.getEnd()->setFinal(name);
+        resultNFA.getEnd()->setFinal(name, priority);
         return resultNFA;
     }
 
@@ -81,19 +81,20 @@ public:
 
     void createRegexNFAs(unordered_map<string, string> &regex, vector<string> &orderedRegex,
                          vector<string> &keywords, vector<string> &punctuations) {
+        int priority = orderedRegex.size();
         for (const string &orderedReg: orderedRegex) {
-            NFA nfa = thompsonConstruction(regex[orderedReg], orderedReg);
+            NFA nfa = thompsonConstruction(regex[orderedReg], orderedReg, priority--);
             regexNFAs[orderedReg] = nfa;
         }
 
         for (const string &keyword: keywords) {
             string orgKeyword = removeConcat(keyword);
-            NFA nfa = thompsonConstruction(keyword, orgKeyword);
+            NFA nfa = thompsonConstruction(keyword, orgKeyword,orderedRegex.size()+1);
             regexNFAs[keyword] = nfa;
         }
         for (const string &punctuation: punctuations) {
             string orgPunctuation = removeConcat(punctuation);
-            NFA nfa = thompsonConstruction(punctuation, orgPunctuation);
+            NFA nfa = thompsonConstruction(punctuation, orgPunctuation,orderedRegex.size()+1);
             regexNFAs[punctuation] = nfa;
         }
     }
