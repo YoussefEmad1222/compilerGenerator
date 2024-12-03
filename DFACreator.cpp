@@ -96,9 +96,9 @@ void DFACreator::createDFA() {
                     dAccept[stateId] = acceptingStates.begin()->second;
                 }
             }
-
             // Add state and transition input to DFA transition table
-            dTransitions[{dStates[state], input}] = dStates[e_closure];
+            if(!e_closure.empty())
+                dTransitions[{dStates[state], input}] = dStates[e_closure];
         }
     }
 
