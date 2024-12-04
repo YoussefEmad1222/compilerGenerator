@@ -1,0 +1,14 @@
+%{
+
+    /* definitions */
+
+%}
+
+
+%%
+
+    /* rules */
+
+%%
+
+    /* functions */
