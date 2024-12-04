@@ -13,7 +13,7 @@ A complete guide for using Flex to generate a lexical analyzer for the given reg
 
 ## Writing a Flex Program
 1. Create file `lexical_analyzer.l`.
-2. The program is divided into 3 sections: **definitions**, **rules**, and **auxiliary procedures** where we can write the `main` function:
+2. The program is divided into 3 sections: **definitions**, **rules**, and **functions** where we will add the `main` procedure:
     ````
     %{
     
@@ -100,7 +100,7 @@ A complete guide for using Flex to generate a lexical analyzer for the given reg
     ````
 ## Running the Program
 1. In the terminal, type the following:
-   ````
+   ````commandline
     flex lexical_analyzer.l
     gcc lex.yy.c -o output
     .\output in.txt out.txt
