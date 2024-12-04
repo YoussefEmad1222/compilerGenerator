@@ -10,4 +10,5 @@ add_executable(complierGenerator main.cpp
         NFAcreation.cpp
         constants.h
         DFACreator.cpp
+        DFACreator.h
 )
