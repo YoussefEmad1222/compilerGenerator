@@ -7,7 +7,7 @@ add_executable(complierGenerator main.cpp
         regexFileReader.cpp
         postfixRegexConvertor.cpp
         substitutions.cpp
-        NFA.cpp
         NFAcreation.cpp
         constants.h
+        DFACreator.cpp
 )
