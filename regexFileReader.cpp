@@ -181,8 +181,9 @@ public:
     }
 
 
+
     void readLexicalRules(const string &filename) {
-        ifstream file("../input/" + filename);
+        ifstream file(filename);
         if (!file.is_open()) {
             cerr << "Error: Could not open file " << filename << endl;
             return;

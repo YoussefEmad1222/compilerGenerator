@@ -2,7 +2,7 @@
 #include "constants.h"
 #include <functional>
 
-class nfaCreation {
+class NFACreation {
     long long globalStateID = 0;
     unordered_map<string, NFA> regexNFAs;
     ofstream out;
@@ -68,7 +68,7 @@ class nfaCreation {
     }
 
 public:
-    nfaCreation() {
+    NFACreation() {
         globalStateID = 0;
         regexNFAs.clear();
     }

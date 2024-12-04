@@ -8,24 +8,35 @@
 
 using namespace std;
 
+typedef long long State;
+
 struct DFA {
-    long long startState;
-    unordered_map<long long, string> acceptStates;
+    State startState;
+    unordered_map<State, string> acceptStates;
     unordered_set<char> inputs;
-    map<pair<long long, char>, long long> transitions;
+    map<pair<State, char>, State> transitions;
 
     DFA(): startState(0) {
     }
 
-    DFA(long long startState, unordered_map<long long, string> acceptStates, unordered_set<char> inputs,
-        map<pair<long long, char>, long long> transitions)
+
+    DFA(State startState, unordered_map<State, string> acceptStates, unordered_set<char> inputs,
+        map<pair<State, char>, State> transitions)
     : startState(std::move(startState)),
       acceptStates(std::move(acceptStates)),
       inputs(std::move(inputs)),
       transitions(std::move(transitions)) {}
 
-    long long move(const long long& state, const char& input) {
-        return transitions[{state, input}];
+    
+    bool move(const State& state, const char& input, State& nextState) {
+        // Make sure that the transition exists first
+        // This is done to not insert a new transition with 'state' and 'input'
+        if(transitions.find({state, input}) != transitions.end()){
+            nextState = transitions[{state, input}];
+            return true;
+        }
+    
+        return false;
     }
 };
 
