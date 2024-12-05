@@ -1,0 +1,4 @@
+int id , id , id , id; while (id relopnum)
+{
+id assign id addop num ;
+}
