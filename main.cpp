@@ -1,7 +1,7 @@
 
 #include "regexFileReader.cpp"
 #include "NFAcreation.cpp"
-#include "DFACreator.cpp"
+#include "DFACreator.h"
 #include "LexicalAnalyzer.cpp"
 #include "DFA_minimizer.hpp"
 
@@ -15,11 +15,19 @@ int main() {
     NFACreation nfaCreator;
     nfaCreator.createRegexNFAs(regexLoader.expressions, regexLoader.orderedExpressions, regexLoader.keywords, regexLoader.punctuations);
     nfaCreator.writeAllStatesToFile("output/nfa.txt");
+
     const NFA nfa = nfaCreator.combineNFAs();
+    // Construct DFA from NFA
     DFACreator dfaCreator(nfa);
     dfaCreator.createDFA();
-    dfaCreator.writeAllStatesToFile("output/dfa.txt");
-    LexicalAnalyzer analyzer(dfaCreator.getDFA());
+    DFA dfa = dfaCreator.getDFA();
+    dfa.writeAllStatesToFile("output/dfa.txt");
+
+    // Construct minimized DFA
+    DFA minimized = minimizeDFA(dfaCreator.getDFA());
+    minimized.writeAllStatesToFile("output/MinDfa.txt");
+
+    LexicalAnalyzer analyzer(minimized);
     cout << endl;
     analyzer.Analyze("input/input.txt");
     return 0;

@@ -8,109 +8,129 @@
 using namespace std;
 
 
-static inline DFA removeUnreachableStates(const DFA& dfa) {
-    set<long long> reachableStates;
-    queue<long long> toVisit;
-    toVisit.push(dfa.startState);
-    reachableStates.insert(dfa.startState);
-
-    while (!toVisit.empty()) {
-        long long state = toVisit.front();
-        toVisit.pop();
-        for (char input : dfa.inputs) {
-            auto iter = dfa.transitions.find({state, input});
-            if (iter != dfa.transitions.end()) {
-                long long nextState = iter->second;
-                if (!reachableStates.count(nextState)) {
-                    reachableStates.insert(nextState);
-                    toVisit.push(nextState);
-                }
-            }
-        }
+template <typename T>
+void printSet(const std::set<T>& s, const std::string& name) {
+    std::cout << name << ": { ";
+    for (const auto& element : s) {
+        std::cout << element << " ";
     }
-
-    // Construct the filtered DFA
-    unordered_map<long long, string> newAcceptStates;
-    map<pair<long long, char>, long long> newTransitions;
-    for (const auto& trans : dfa.transitions) {
-        if (reachableStates.count(trans.first.first) &&
-            reachableStates.count(trans.second)) {
-            newTransitions[trans.first] = trans.second;
-        }
-    }
-
-    for (const auto& state : dfa.acceptStates) {
-        if (reachableStates.count(state.first)) {
-            newAcceptStates[state.first] = state.second;
-        }
-    }
-
-    return DFA(dfa.startState, newAcceptStates, dfa.inputs, newTransitions);
+    std::cout << "}\n";
 }
 
-static inline DFA minimizeDFA(const DFA& dfa) {
-    DFA filteredDFA = removeUnreachableStates(dfa);
-
-    // Initialize states and partition
-    set<long long> states;
-    for (const auto& trans : filteredDFA.transitions) {
-        states.insert(trans.first.first);
-        states.insert(trans.second);
+static inline DFA minimizeDFA(const DFA& dfa) 
+{
+    vector<set<State>> partition;
+    set<State> finalStates, nonFinalStates;
+    if(dfa.acceptStates.count(dfa.startState))
+    {
+        finalStates.insert(dfa.startState);
+    }
+    else
+    {
+        nonFinalStates.insert(dfa.startState);
     }
 
-    vector<set<long long>> partition;
-    set<long long> finalStates, nonFinalStates;
+    for (const auto& trans : dfa.transitions) {
+        if(dfa.acceptStates.count(trans.second))
+        {
+            finalStates.insert(trans.second);
+        }
+        else
+        {
+            nonFinalStates.insert(trans.second);
+        }
 
-    for (auto state : states) {
-        if (filteredDFA.acceptStates.count(state)) {
-            finalStates.insert(state);
-        } else {
-            nonFinalStates.insert(state);
+        if(dfa.acceptStates.count(trans.first.first))
+        {
+            finalStates.insert(trans.first.first);
+        }
+        else
+        {
+            nonFinalStates.insert(trans.first.first);
         }
     }
+    
+    // Z
 
-    if (!finalStates.empty()) partition.push_back(finalStates);
-    if (!nonFinalStates.empty()) partition.push_back(nonFinalStates);
+    partition.push_back(finalStates);
+    partition.push_back(nonFinalStates);
 
     bool changed = true;
 
     // Refine partition until no changes
     while (changed) {
         changed = false;
-        vector<set<long long>> newPartition;
+        std::vector<std::set<long long>> newPartition;
+
+        // Map to track which partition each state belongs to
+        std::map<long long, size_t> stateToGroup;
+        for (size_t i = 0; i < partition.size(); ++i) {
+            for (auto state : partition[i]) {
+                stateToGroup[state] = i;
+            }
+        }
 
         for (const auto& group : partition) {
-            map<vector<int>, set<long long>> groups;
+            // Divide the group based on state signatures
+            std::map<std::vector<pair<int, string>>, std::set<long long>> groups;
 
             for (auto state : group) {
-                vector<int> signature;
+                std::vector<pair<int, string>> signature;
+                std::string myToken = dfa.acceptStates.find(state) != dfa.acceptStates.end() ? dfa.acceptStates.at(state) : "";
 
-                // Create a signature for the state based on transitions and partition groups
-                for (char input : filteredDFA.inputs) {
-                    auto iter = filteredDFA.transitions.find({state, input});
-                    if (iter != filteredDFA.transitions.end()) {
-                        auto target = iter->second;
-                        size_t index = 0;
-                        for (; index < partition.size(); ++index)
-                            if (partition[index].count(target)) break;
-
-                        signature.push_back(index);
+                for (char input : dfa.inputs) {
+                    auto iter = dfa.transitions.find({state, input});
+                    if (iter != dfa.transitions.end()) {
+                        long long target = iter->second;
+                        
+                        // Check if the target state is in the partition groups
+                        if (stateToGroup.find(target) != stateToGroup.end()) {
+                            // Find the associated string from acceptStates
+                            std::string targetToken = dfa.acceptStates.find(target) != dfa.acceptStates.end() ? dfa.acceptStates.at(target) : "";
+                            
+                            // Add the group index and the string to the signature
+                            signature.push_back({stateToGroup[target], targetToken});
+                        } else {
+                            signature.push_back({-1, myToken}); // Invalid transition
+                        }
                     } else {
-                        signature.push_back(-1);
+                        signature.push_back({-1, myToken}); // No transition for this input
                     }
                 }
                 groups[signature].insert(state);
             }
 
+            // Add newly divided groups to the new partition
             for (const auto& entry : groups) {
-                if (entry.second.size() < group.size())
-                    changed = true;
+                if (entry.second.size() < group.size()) changed = true;
                 newPartition.push_back(entry.second);
             }
         }
 
-        partition = move(newPartition);
+
+        // cout << "new partition\n\n\n\n";
+        // std::cout << "Partition contents:\n";
+        // for (size_t i = 0; i < partition.size(); ++i) {
+        //     std::cout << "Group " << i << ": { ";
+        //     for (auto state : partition[i]) {
+        //         std::cout << state << " ";
+        //         auto it = dfa.acceptStates.find(state);
+        //         if (it != dfa.acceptStates.end()) {
+        //             std::cout << "State " << state << " has string: " << it->second << std::endl;
+        //         } else {
+        //             std::cout << "State " << state << " is NOT in acceptStates." << std::endl;
+        //         }
+        //     }
+        //     std::cout << "}\n";
+        // }
+
+        // fflush(NULL);
+
+        // cout << "\n\n\nold partitions\n\n\n\n";
+        // printPartition(partition);
+        partition = newPartition;
     }
+
 
     // Construct new minimized DFA
     unordered_map<long long, string> newAcceptStates;
@@ -121,9 +141,9 @@ static inline DFA minimizeDFA(const DFA& dfa) {
     bool startStateAssigned = false;
 
     for (const auto& group : partition) {
-        long long repr = *group.begin(); // Representative of the group
+        long long repr = *group.begin();
 
-        if (group.count(filteredDFA.startState) && !startStateAssigned) {
+        if (group.count(dfa.startState) && !startStateAssigned) {
             newStartState = 0; // Assign ID 0 to the start state
             for (auto state : group) representative[state] = 0;
             startStateAssigned = true;
@@ -134,33 +154,23 @@ static inline DFA minimizeDFA(const DFA& dfa) {
 
         string mergedAcceptToken;
         for (auto state : group) {
-            if (filteredDFA.acceptStates.count(state)) {
-                // This is an assumption I made on how to deal with partitions that have multiple accept states, each
-                // with their own token, so currently I only consider one, but i left the option of merging below just in case
-#ifdef MERGE_ACCEPT_STATES_TOKENS
-                if (!mergedAcceptToken.empty()) {
-                    mergedAcceptToken += ",";
-                }
-                mergedAcceptToken += dfa.acceptStates.at(state);
-#else
-                mergedAcceptToken = filteredDFA.acceptStates.at(state);
-#endif
+            if (dfa.acceptStates.count(state)) {
+                mergedAcceptToken = dfa.acceptStates.at(state);
+                newAcceptStates[representative[repr]] = dfa.acceptStates.at(state);
+                break;
             }
         }
-
-        if (!mergedAcceptToken.empty()) {
-            newAcceptStates[representative[repr]] = mergedAcceptToken;
-        }
+        
     }
 
-    for (const auto& trans : filteredDFA.transitions) {
+    for (const auto& trans : dfa.transitions) {
         long long from = representative[trans.first.first];
         char input = trans.first.second;
         long long to = representative[trans.second];
         newTransitions[{from, input}] = to;
     }
 
-    return DFA(newStartState, newAcceptStates, filteredDFA.inputs, newTransitions);
+    return DFA(newStartState, newAcceptStates, dfa.inputs, newTransitions);
 }
 
 #endif // DFA_MINIMIZER_HPP

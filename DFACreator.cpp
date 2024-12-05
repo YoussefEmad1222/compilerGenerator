@@ -115,37 +115,7 @@ DFA DFACreator::getDFA() {
 
 
 void DFACreator::writeAllStatesToFile(const string &filename) {
-    ofstream file(filename);
-    if (!file.is_open()) {
-        cerr << "Failed to open file: " << filename << endl;
-        return;
-    }
-
-    unordered_set<ll> states;
-    for (const auto &[fst, snd]: dfa.transitions) {
-        states.insert(fst.first);
-    }
-
-    // States
-    file << "States: ";
-    for (const auto &state: states) {
-        file << state << " ";
-    }
-    file << endl;
-
-    // Accepting States
-    file << "Accepting States: ";
-    for (const auto &[fst, snd]: dfa.acceptStates) {
-        file << fst << " ";
-    }
-    file << endl;
-
-    // Transitions current,next,input
-    for (const auto &[fst, snd]: dfa.transitions) {
-        file << fst.first << "," << snd << "," << string(1, fst.second) << endl;
-    }
-
-    file.close();
+    dfa.writeAllStatesToFile(filename);
 }
 
 

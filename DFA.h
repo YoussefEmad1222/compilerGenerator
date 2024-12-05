@@ -38,6 +38,40 @@ struct DFA {
     
         return false;
     }
+
+    void writeAllStatesToFile(const string &filename) {
+        ofstream file(filename);
+        if (!file.is_open()) {
+            cerr << "Failed to open file: " << filename << endl;
+            return;
+        }
+
+        unordered_set<State> states;
+        for (const auto &[fst, snd]: transitions) {
+            states.insert(fst.first);
+        }
+
+        // States
+        file << "States: ";
+        for (const auto &state: states) {
+            file << state << " ";
+        }
+        file << endl;
+
+        // Accepting States
+        file << "Accepting States: ";
+        for (const auto &[fst, snd]: acceptStates) {
+            file << fst << " ";
+        }
+        file << endl;
+
+        // Transitions current,next,input
+        for (const auto &[fst, snd]: transitions) {
+            file << fst.first << "," << snd << "," << string(1, fst.second) << endl;
+        }
+
+        file.close();
+    }
 };
 
 #endif //DFA_H
