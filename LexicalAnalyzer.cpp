@@ -11,7 +11,7 @@ private:
     vector<string> symbolTable;
 public:
     explicit LexicalAnalyzer(DFA DFA);
-    void Analyze(const string &filePath);
+    void Analyze(const string &filePath, const char* outputFilePath);
     void FindFirstTokenInString(std::string string, int stringStart, int &tokenEnd, State currentState, std::string &tokenClass);
 };
 
@@ -20,11 +20,20 @@ LexicalAnalyzer::LexicalAnalyzer(DFA DFA)
     dfa = DFA;
 }
 
-void LexicalAnalyzer::Analyze(const string &filePath)
+
+
+void LexicalAnalyzer::Analyze(const string &filePath, const char* outputFilePath)
 {
     std::ifstream file(filePath, std::ios::in);
 
     if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;
+        return;
+    }
+
+    std::ofstream output(outputFilePath, std::ios::out);
+
+    if (!output.is_open()) {
         std::cerr << "Error opening file!" << std::endl;
         return;
     }
@@ -41,7 +50,7 @@ void LexicalAnalyzer::Analyze(const string &filePath)
         if(fileContent[stringStart] == '\n' || fileContent[stringStart] == '\t' || fileContent[stringStart] == ' ') continue;
         FindFirstTokenInString(fileContent, stringStart, tokenEnd, dfa.startState, tokenClass);
         if(tokenClass == ""){
-            cout << "Error couldn't find token" << endl;
+            output << "Error couldn't find token" << endl;
             continue;
         }
 
@@ -50,7 +59,7 @@ void LexicalAnalyzer::Analyze(const string &filePath)
         if(std::string("id").compare(tokenClass) == 0)
             symbolTable.push_back(lexeme);
 
-        cout << lexeme << " " << tokenClass << endl;
+        output << lexeme << " " << tokenClass << endl;
         stringStart = tokenEnd;
     }
 

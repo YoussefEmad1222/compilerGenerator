@@ -14,17 +14,12 @@ int main() {
     regexLoader.printAll();
     NFACreation nfaCreator;
     nfaCreator.createRegexNFAs(regexLoader.expressions, regexLoader.orderedExpressions, regexLoader.keywords, regexLoader.punctuations);
-    nfaCreator.writeAllStatesToFile("output/nfa.txt");
     const NFA nfa = nfaCreator.combineNFAs();
     DFACreator dfaCreator(nfa);
     dfaCreator.createDFA();
-    dfaCreator.writeAllStatesToFile("output/dfa.txt");
-
     DFA minimized = minimizeDFA(dfaCreator.getDFA());
-    dfaCreator.writeAllStatesToFile(minimized, "output/MinDfa.txt");
-    
     LexicalAnalyzer analyzer(minimized);
     cout << endl;
-    analyzer.Analyze("input/input.txt");
+    analyzer.Analyze("input/input.txt", "output/tokens.txt");
     return 0;
 }
