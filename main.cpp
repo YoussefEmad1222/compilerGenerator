@@ -19,7 +19,11 @@ int main() {
     DFACreator dfaCreator(nfa);
     dfaCreator.createDFA();
     dfaCreator.writeAllStatesToFile("output/dfa.txt");
-    LexicalAnalyzer analyzer(dfaCreator.getDFA());
+
+    DFA minimized = minimizeDFA(dfaCreator.getDFA());
+    dfaCreator.writeAllStatesToFile(minimized, "output/MinDfa.txt");
+    
+    LexicalAnalyzer analyzer(minimized);
     cout << endl;
     analyzer.Analyze("input/input.txt");
     return 0;
