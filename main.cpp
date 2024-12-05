@@ -3,6 +3,7 @@
 #include "NFAcreation.cpp"
 #include "DFACreator.cpp"
 #include "LexicalAnalyzer.cpp"
+#include "DFA_minimizer.hpp"
 
 using namespace std;
 namespace fs = filesystem;
@@ -19,7 +20,7 @@ int main() {
     dfaCreator.createDFA();
     dfaCreator.writeAllStatesToFile("output/dfa.txt");
     LexicalAnalyzer analyzer(dfaCreator.getDFA());
+    cout << endl;
     analyzer.Analyze("input/input.txt");
     return 0;
-
 }
