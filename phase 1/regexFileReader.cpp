@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #include <iostream>
 #include "substitutions.cpp"
-#include "postfixRegexConvertor.cpp"
+#include "../postfixRegexConvertor.cpp"
 
 using namespace std;
 
