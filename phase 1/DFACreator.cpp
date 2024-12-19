@@ -4,7 +4,7 @@
 
 #include "DFACreator.h"
 
-#include "constants.h"
+#include "../constants.h"
 
 
 DFACreator::DFACreator(const NFA nfa): nStart() {

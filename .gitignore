@@ -6,6 +6,7 @@ CMakeFiles/
 CMakeScripts/
 CMakeCache.txt
 .idea/
+output/
 cmake-build-debug/
 cmake-build-debug/.ninja_deps
 cmake-build-debug/.ninja_log
@@ -16,3 +17,4 @@ cmake-build-debug/Testing/Temporary/LastTest.log
 cmake-build-debug/build.ninja
 cmake-build-debug/cmake_install.cmake
 cmake-build-debug/complierGenerator.exe
+

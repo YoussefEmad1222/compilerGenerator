@@ -1,5 +1,5 @@
-#include "NFA.h"
-#include "constants.h"
+#include "../NFA.h"
+#include "../constants.h"
 #include <functional>
 
 class NFACreation {
