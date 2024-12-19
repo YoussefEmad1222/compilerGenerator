@@ -1,7 +1,6 @@
 #ifndef LEXICALANALYZER
 #define LEXICALANALYZER
 
-#include <cstring>
 #include "DFA.h"
 
 class LexicalAnalyzer

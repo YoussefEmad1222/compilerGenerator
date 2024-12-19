@@ -5,7 +5,7 @@
 #ifndef NFA_H
 #define NFA_H
 
-#include "constants.h"
+#include "../constants.h"
 using namespace std;
 
 class stateNFA {

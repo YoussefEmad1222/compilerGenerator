@@ -7,7 +7,7 @@
 
 #include <bits/stdc++.h>
 
-#include "../DFA.h"
+#include "DFA.h"
 #include "NFA.h"
 
 #define ll long long
