@@ -8,7 +8,9 @@ add_executable(complierGenerator main.cpp
         "phase 1/postfixRegexConvertor.cpp"
         "phase 1/substitutions.cpp"
         "phase 1/NFAcreation.cpp"
-        constants.h
+        "constants.h"
         "phase 1/DFACreator.cpp"
         "phase 1/DFACreator.h"
+        "phase 2/grammarFileParser.cpp"
+        "phase 2/leftRecursionElimination.cpp"
 )

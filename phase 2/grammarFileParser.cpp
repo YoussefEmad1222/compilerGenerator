@@ -10,9 +10,14 @@ public:
     grammarFileParser() = default;
 
     static string trim(const string &s) {
-        size_t startPos = s.find_first_not_of(" \t\n\r\f\v");
-        size_t endPos = s.find_last_not_of(" \t\n\r\f\v");
-        return (startPos == string::npos || endPos == string::npos) ? "" : s.substr(startPos, endPos - startPos + 1);
+        string production = s;
+        production.erase(remove(production.begin(), production.end(), '\n'), production.end());
+        production.erase(remove(production.begin(), production.end(), '\t'), production.end());
+        production.erase(remove(production.begin(), production.end(), '\r'), production.end());
+
+        size_t startPos = production.find_first_not_of(" ");
+        size_t endPos = production.find_last_not_of(" ");
+        return (startPos == string::npos || endPos == string::npos) ? "" : production.substr(startPos, endPos - startPos + 1);
     }
 
     static vector<string> splitByDelimiter(const string &str, char delimiter) {
@@ -28,7 +33,6 @@ public:
     void addRule(const string &nonTerminal, vector<string> productions) {
         nonTerminals.push_back(nonTerminal);
         for (auto &production : productions) {
-            production.erase(remove(production.begin(), production.end(), ' '), production.end());
             production = trim(production);
         }
         grammar[nonTerminal] = move(productions);

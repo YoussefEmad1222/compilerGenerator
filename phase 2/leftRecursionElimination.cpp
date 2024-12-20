@@ -25,20 +25,18 @@ public:
         vector<string> productions1 = gfp->grammar[nonTerminal1];
         vector<string> productions2 = gfp->grammar[nonTerminal2];
         vector<string> newProductions2;
+
         for (const auto &production: productions2) {
-            vector<int> occurrences = findAllOccurrences(production, nonTerminal1);
-            if (occurrences.empty()) {
-                newProductions2.push_back(production);
-            } else {
-                for (int i = 0; i < occurrences.size(); i++) {
-                    string left = production.substr(0, occurrences[i]);
-                    string right = production.substr(occurrences[i] + nonTerminal1.size());
-                    for (const auto &prod1: productions1) {
-                        newProductions2.push_back(left + prod1 + right);
-                    }
+            if (production.substr(0, nonTerminal1.size()) == nonTerminal1) {
+                string right = production.substr(nonTerminal1.size());
+                for (const auto &prod1: productions1) {
+                    newProductions2.push_back(prod1 + " " + right);
                 }
+            } else {
+                newProductions2.push_back(production);
             }
         }
+
         gfp->grammar[nonTerminal2] = newProductions2;
     }
 
@@ -71,12 +69,12 @@ public:
             if (beta == "\\L") {
                 newProductions.push_back(newNonTerminal);
             } else {
-                newProductions.push_back(beta + newNonTerminal);
+                newProductions.push_back(beta + " " + newNonTerminal);
             }
         }
 
         for (const auto &alpha: alphas) {
-            newProductionsPrime.push_back(alpha + newNonTerminal);
+            newProductionsPrime.push_back(alpha + " " + newNonTerminal);
         }
         newProductionsPrime.push_back(string(1, EPSILON));
         newGrammar[newNonTerminal] = newProductionsPrime;
