@@ -2,6 +2,7 @@
 #define LEXICALANALYZER
 
 #include "DFA.h"
+#include <bits/stdc++.h>
 
 class LexicalAnalyzer
 {

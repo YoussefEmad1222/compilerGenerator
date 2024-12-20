@@ -7,6 +7,7 @@
 
 #include "../constants.h"
 using namespace std;
+#include <bits/stdc++.h>
 
 class stateNFA {
     long long id;

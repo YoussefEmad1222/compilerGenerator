@@ -1,6 +1,7 @@
 #include "NFA.h"
-#include "constants.h"
+#include "../constants.h"
 #include <functional>
+#include <bits/stdc++.h>
 
 class NFACreation {
     long long globalStateID = 0;

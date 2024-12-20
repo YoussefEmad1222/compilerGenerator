@@ -12,8 +12,7 @@ const char CONCATENATION_OPERATOR = '?';
 const char LEFT_PARENTHESIS = '(';
 const char RIGHT_PARENTHESIS = ')';
 const char ESCAPE_CHARACTER = '\\';
-const char EPSILON = '\0';
-
+const char EPSILON = '#';
 #include <iostream>
 #include <bits/stdc++.h>
 

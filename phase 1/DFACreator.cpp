@@ -5,6 +5,7 @@
 #include "DFACreator.h"
 
 #include "../constants.h"
+#include <bits/stdc++.h>
 
 
 DFACreator::DFACreator(const NFA nfa): nStart() {
