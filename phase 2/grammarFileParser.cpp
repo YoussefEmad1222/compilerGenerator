@@ -11,9 +11,13 @@ public:
 
     static string trim(const string &s) {
         string production = s;
-        production.erase(remove(production.begin(), production.end(), '\n'), production.end());
-        production.erase(remove(production.begin(), production.end(), '\t'), production.end());
-        production.erase(remove(production.begin(), production.end(), '\r'), production.end());
+        replace(production.begin(), production.end(), '\n', ' ');
+        replace(production.begin(), production.end(), '\t', ' ');
+        replace(production.begin(), production.end(), '\r', ' ');
+
+        // production.erase(remove(production.begin(), production.end(), '\n'), production.end());
+        // production.erase(remove(production.begin(), production.end(), '\t'), production.end());
+        // production.erase(remove(production.begin(), production.end(), '\r'), production.end());
 
         size_t startPos = production.find_first_not_of(" ");
         size_t endPos = production.find_last_not_of(" ");
