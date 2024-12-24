@@ -13,7 +13,6 @@ const char LEFT_PARENTHESIS = '(';
 const char RIGHT_PARENTHESIS = ')';
 const char ESCAPE_CHARACTER = '\\';
 const char EPSILON = '#';
-#include <iostream>
-#include <bits/stdc++.h>
+const int MAX_INT = 1000000000;
 
 #endif //COMPLIERGENERATOR_CONSTANTS_H
