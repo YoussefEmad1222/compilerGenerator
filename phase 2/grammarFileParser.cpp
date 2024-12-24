@@ -1,4 +1,5 @@
 #include "grammarFileParser.h"
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -16,20 +17,6 @@ string grammarFileParser::trim(const string &s) {
                : production.substr(startPos, endPos - startPos + 1);
 }
 
-    static string trim(const string &s) {
-        string production = s;
-        replace(production.begin(), production.end(), '\n', ' ');
-        replace(production.begin(), production.end(), '\t', ' ');
-        replace(production.begin(), production.end(), '\r', ' ');
-
-        // production.erase(remove(production.begin(), production.end(), '\n'), production.end());
-        // production.erase(remove(production.begin(), production.end(), '\t'), production.end());
-        // production.erase(remove(production.begin(), production.end(), '\r'), production.end());
-
-        size_t startPos = production.find_first_not_of(" ");
-        size_t endPos = production.find_last_not_of(" ");
-        return (startPos == string::npos || endPos == string::npos) ? "" : production.substr(startPos, endPos - startPos + 1);
-    }
 vector<string> grammarFileParser::splitByDelimiter(const string &str, char delimiter) {
     vector<string> tokens;
     stringstream ss(str);

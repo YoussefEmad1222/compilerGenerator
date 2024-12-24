@@ -95,6 +95,9 @@ public:
         }
         gfp->grammar = newGrammar;
         gfp->nonTerminals = newNonTerminals;
-        gfp->printAll();
+    }
+
+    grammarFileParser getGrammarFileParser() {
+        return *gfp;
     }
 };

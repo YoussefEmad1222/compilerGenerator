@@ -4,9 +4,9 @@
 using namespace std;
 
 class leftFactoring {
+public:
     grammarFileParser *gfp;
 
-public:
     explicit leftFactoring(grammarFileParser *gfp) {
         this->gfp = gfp;
     }
@@ -79,5 +79,4 @@ public:
         }
         gfp->grammar[nonTerminal] = newProductions;
     }
-
 };

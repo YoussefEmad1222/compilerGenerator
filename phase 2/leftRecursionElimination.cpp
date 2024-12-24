@@ -4,9 +4,10 @@
 
 using namespace std;
 class LeftRecursionEliminator {
-    grammarFileParser *gfp;
 
 public:
+    grammarFileParser *gfp;
+
     LeftRecursionEliminator() {
         gfp = new grammarFileParser();
     }
