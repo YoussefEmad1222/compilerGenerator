@@ -13,4 +13,5 @@ add_executable(complierGenerator main.cpp
         "phase 1/DFACreator.h"
         "phase 2/grammarFileParser.cpp"
         "phase 2/leftRecursionElimination.cpp"
+        "phase 2/leftFactoring.cpp"
 )

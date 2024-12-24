@@ -14,8 +14,5 @@ int main() {
     gfp.readFile("../input/grammar.txt");
     LeftRecursionEliminator lre = LeftRecursionEliminator();
     lre.eliminateLeftRecursion("../input/grammar.txt");
-    leftFactoring lf = leftFactoring(&gfp);
-    lf.leftFactor();
-    gfp.printAll();
     return 0;
 }

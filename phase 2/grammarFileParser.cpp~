@@ -81,7 +81,7 @@ void grammarFileParser::printAll() const {
     }
 }
 
-unordered_map<string, vector<string> > grammarFileParser::getGrammar() const {
+unordered_map<string, vector<string>> grammarFileParser::getGrammar() const {
     return grammar;
 }
 
