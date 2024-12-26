@@ -2,7 +2,7 @@
 #include "phase 1/NFAcreation.cpp"
 #include "phase 2/firstFollowCalculator.h"
 #include "phase 2/LeftRecursionElimination.cpp"
-#include "phase 2/leftFactoring.cpp"
+#include "phase 2/leftFactoring.h"
 using namespace std;
 namespace fs = filesystem;
 
