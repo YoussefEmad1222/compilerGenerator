@@ -48,7 +48,7 @@ void FirstFollowCalculator::calculateFirst() {
 
 void FirstFollowCalculator::calculateFollow() {
     // Place $ in FOLLOW(S), where S is the start symbol, and $ is the input right endmarker.
-    string startSymbol = grammar.begin()->first; // TODO: change this to the actual start symbol
+    string startSymbol = nonTerminals.front();
     follow[startSymbol].insert(END_SYMBOL);
     bool isSetChanged;
 
