@@ -23,16 +23,6 @@ class FirstFollowCalculator {
         return token.front() == '\'' && token.back() == '\'';
     }
 
-    static vector<string> splitByDelimiter(const string &str, char delimiter) {
-        vector<string> tokens;
-        stringstream ss(str);
-        string token;
-        while (getline(ss, token, delimiter)) {
-            tokens.push_back(token);
-        }
-        return tokens;
-    }
-
     // Inserts token into the set of tokens, and returns false if it already exists
     bool insertToken(set<string> &tokens, string token) {
         if (tokens.find(token) == tokens.end()) {
@@ -59,6 +49,15 @@ class FirstFollowCalculator {
     void calculateFollow();
     unordered_map<string, set<string>> getFirst();
     unordered_map<string, set<string>> getFollow();
+    static vector<string> splitByDelimiter(const string &str, char delimiter) {
+        vector<string> tokens;
+        stringstream ss(str);
+        string token;
+        while (getline(ss, token, delimiter)) {
+            tokens.push_back(token);
+        }
+        return tokens;
+    }
 };
 
 #endif //FIRSTFOLLOWCALCULATOR_H

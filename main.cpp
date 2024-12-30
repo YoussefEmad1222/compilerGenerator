@@ -1,17 +1,20 @@
 #include "phase 1/regexFileReader.cpp"
 #include "phase 1/NFAcreation.cpp"
-#include "phase 2/firstFollowCalculator.h"
+#include "phase 2/firstFollowCalculator.cpp"
 #include "phase 2/LeftRecursionElimination.cpp"
-#include "phase 2/leftFactoring.h"
+#include "phase 2/leftFactoring.cpp"
+#include "phase 2/grammarFileParser.cpp"
+#include "phase 2/PredictiveParsingTable.cpp"
+
 using namespace std;
 namespace fs = filesystem;
 
 int main() {
     //  processLexicalAnalysis("../input/regex_rules.txt", "../input/input.txt", "../output/tokens.txt");
     grammarFileParser gfp = grammarFileParser();
-    gfp.readFile("../input/grammar.txt");
+    gfp.readFile("input/grammar.txt");
     LeftRecursionEliminator lre = LeftRecursionEliminator();
-    lre.eliminateLeftRecursion("../input/grammar.txt");
+    lre.eliminateLeftRecursion("input/grammar.txt");
     leftFactoring lf = leftFactoring(lre.gfp);
     lf.leftFactor();
     lf.gfp->printAll();
@@ -24,6 +27,11 @@ int main() {
     // Follow Set
     ffc.calculateFollow();
     unordered_map<string, set<string> > follow = ffc.getFollow();
+
+    // Predictive Parsing Table
+    PredictiveParsingTable ppt = PredictiveParsingTable(lf.gfp->grammar, lf.gfp->nonTerminals, first, follow);
+    ppt.constructTable();
+    ppt.printTable();
 
     return 0;
 }
