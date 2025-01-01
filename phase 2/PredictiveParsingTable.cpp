@@ -6,11 +6,67 @@ private:
     vector<string> nonTerminals;
     unordered_map<string, set<string>> first;
     unordered_map<string, set<string>> follow;
-    unordered_map<string, unordered_map<string, string>> parsingTable;
     const string EPSILON = "#";
     const string END_SYMBOL = "$";
+    unordered_map<string, unordered_map<string, string>> parsingTable;
 
     bool isLL1 = true;
+
+    void constructLL1Table(const unordered_map<string, vector<string>>& grammar,
+                            const unordered_map<string, set<string>>& first,
+                            const unordered_map<string, set<string>>& follow) {
+            // Iterate over each non-terminal in the grammar
+            for (const auto& entry : grammar) {
+                string nonTerminal = entry.first;
+                
+                // Iterate over each production rule of the non-terminal
+                for (const string& production : entry.second) {
+                    // Find the first set of the production
+                    set<string> firstOfProduction;
+                    bool epsilonInFirst = false;
+
+                    // Check if the production starts with a terminal or ε (epsilon)
+                    if (production == "ε") {
+                        epsilonInFirst = true;
+                    } else {
+                        // Extract the first set of the production (handle terminals and non-terminals)
+                        for (char symbol : production) {
+                            if (first.count(string(1, symbol)) > 0) {
+                                firstOfProduction = first.at(string(1, symbol));
+                                break;
+                            } else {
+                                firstOfProduction.insert(string(1, symbol));
+                            }
+                        }
+                    }
+
+                    // Add the corresponding production to the table based on First set
+                    for (const string& terminal : firstOfProduction) {
+                        if (terminal != "ε") {
+                            parsingTable[nonTerminal][terminal] = production;
+                        }
+                    }
+
+                    // Handle ε (empty string) in First set
+                    if (epsilonInFirst) {
+                        for (const string& terminal : follow.at(nonTerminal)) {
+                            parsingTable[nonTerminal][terminal] = production;
+                        }
+                    }
+                }
+            }
+        }
+
+        void printParsingTable() {
+            for (const auto& entry : parsingTable) {
+                string nonTerminal = entry.first;
+                cout << "Non-terminal: " << nonTerminal << endl;
+                
+                for (const auto& terminalEntry : entry.second) {
+                    cout << "  Terminal: " << terminalEntry.first << " -> " << terminalEntry.second << endl;
+                }
+            }
+        }
 
 public:
     PredictiveParsingTable(unordered_map<string, vector<string>> grammar, 
@@ -20,71 +76,11 @@ public:
         : grammar(grammar), nonTerminals(nonTerminals), first(first), follow(follow) {}
 
     void constructTable() {
-        for (string nonTerminal : nonTerminals) {
-            for (string production : grammar[nonTerminal]) {
-                vector<string> tokens = FirstFollowCalculator::splitByDelimiter(production, ' ');
-                set<string> firstSet;
-
-                // Compute FIRST(production)
-                bool prevHasEpsilon = true;
-                for (string token : tokens) {
-                    if (prevHasEpsilon) {
-                        unionSet(firstSet, first[token]);
-                        prevHasEpsilon = hasEpsilon(token);
-                    } else {
-                        break;
-                    }
-                }
-
-                // Add FOLLOW(nonTerminal) if EPSILON is in FIRST(production)
-                if (prevHasEpsilon && firstSet.find(EPSILON) != firstSet.end()) {
-                    unionSet(firstSet, follow[nonTerminal]);
-                }
-
-                for (string terminal : firstSet) {
-                    if (terminal == EPSILON) continue;
-                    if (parsingTable[nonTerminal][terminal].empty()) {
-                        parsingTable[nonTerminal][terminal] = production;
-                    } else {
-                        // LL(1) conflict detected
-                        isLL1 = false;
-                        cerr << "Grammar is not LL(1). Conflict at Table[" << nonTerminal
-                             << "][" << terminal << "] between \""
-                             << parsingTable[nonTerminal][terminal] << "\" and \"" << production << "\".\n";
-                    }
-                }
-
-                if (firstSet.find(EPSILON) != firstSet.end()) {
-                    for (string terminal : follow[nonTerminal]) {
-                        if (parsingTable[nonTerminal][terminal].empty()) {
-                            parsingTable[nonTerminal][terminal] = EPSILON;
-                        } else {
-                            // LL(1) conflict detected
-                            isLL1 = false;
-                            cerr << "Grammar is not LL(1). Conflict at Table[" << nonTerminal
-                                 << "][" << terminal << "] between \""
-                                 << parsingTable[nonTerminal][terminal] << "\" and \"" << EPSILON << "\".\n";
-                        }
-                    }
-                }
-            }
-        }
+        constructLL1Table(grammar, first, follow);
     }
 
     void printTable() {
-        if (!isLL1) {
-            cout << "The grammar is not LL(1), so the predictive parsing table cannot be reliably used.\n";
-            return;
-        }
-
-        cout << "Predictive Parsing Table:\n";
-        for (auto &row : parsingTable) {
-            string nonTerminal = row.first;
-            cout << nonTerminal << ":\n";
-            for (auto &col : row.second) {
-                cout << "  " << col.first << " -> " << col.second << "\n";
-            }
-        }
+        printParsingTable();
     }
 
     unordered_map<string, unordered_map<string, string>> getParsingTable() {

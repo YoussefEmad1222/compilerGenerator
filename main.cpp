@@ -23,10 +23,28 @@ int main() {
     // First Set
     ffc.calculateFirst();
     unordered_map<string, set<string> > first = ffc.getFirst();
+    
+    // cout << "First Set:" << endl;
+    // for (auto &p: first) {
+    //     cout << p.first << " : {";
+    //     for (auto &s: p.second) {
+    //         cout << s << ", ";
+    //     }
+    //     cout << "}" << endl;
+    // }
 
     // Follow Set
     ffc.calculateFollow();
     unordered_map<string, set<string> > follow = ffc.getFollow();
+
+    // cout << "Follow Set:" << endl;
+    // for (auto &p: follow) {
+    //     cout << p.first << " : {";
+    //     for (auto &s: p.second) {
+    //         cout << s << ", ";
+    //     }
+    //     cout << "}" << endl;
+    // }
 
     // Predictive Parsing Table
     PredictiveParsingTable ppt = PredictiveParsingTable(lf.gfp->grammar, lf.gfp->nonTerminals, first, follow);
