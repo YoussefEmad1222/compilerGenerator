@@ -10,16 +10,14 @@
 using namespace std;
 
 class FirstFollowCalculator {
-    unordered_map<string, vector<string>> grammar;
+    unordered_map<string, vector<string> > grammar;
     vector<string> nonTerminals;
-    unordered_map<string, set<string>> first;
-    unordered_map<string, set<string>> follow;
+    unordered_map<string, set<string> > first;
+    unordered_map<string, set<string> > follow;
     unordered_map<string, bool> hasEpsilon;
-    const string EPSILON = "#";
-    const string END_SYMBOL = "$";
 
     // Function to check if a token is a terminal
-    bool isTerminal(const string& token) {
+    bool isTerminal(const string &token) {
         return token.front() == '\'' && token.back() == '\'';
     }
 
@@ -35,7 +33,7 @@ class FirstFollowCalculator {
     // Merges both sets into set1, and returns true if set1 changes
     bool unionSets(set<string> &set1, set<string> &set2) {
         bool isChanged = false;
-        for(auto token : set2) {
+        for (auto token: set2) {
             isChanged |= insertToken(set1, token);
         }
         return isChanged;
@@ -43,12 +41,17 @@ class FirstFollowCalculator {
 
     void initFirst();
 
-    public:
-    FirstFollowCalculator(unordered_map<string, vector<string>> grammar, vector<string> nonTerminals);
+public:
+    FirstFollowCalculator(unordered_map<string, vector<string> > grammar, vector<string> nonTerminals);
+
     void calculateFirst();
+
     void calculateFollow();
-    unordered_map<string, set<string>> getFirst();
-    unordered_map<string, set<string>> getFollow();
+
+    unordered_map<string, set<string> > getFirst();
+
+    unordered_map<string, set<string> > getFollow();
+
     static vector<string> splitByDelimiter(const string &str, char delimiter) {
         vector<string> tokens;
         stringstream ss(str);

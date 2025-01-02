@@ -12,7 +12,8 @@ public:
 
     explicit leftFactoring(grammarFileParser *gfp);
 
-    vector<string> getSuffixes(const vector<string> &productions, int common_prefix_length, int i, int common_prefix_index);
+    vector<string> getSuffixes(const vector<string> &productions, int common_prefix_length, int i,
+                               int common_prefix_index);
 
     void leftFactor();
 

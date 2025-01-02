@@ -1,11 +1,11 @@
 #include "phase 1/regexFileReader.cpp"
 #include "phase 1/NFAcreation.cpp"
-#include "phase 2/firstFollowCalculator.cpp"
-#include "phase 2/leftRecursionElimination.cpp"
-#include "phase 2/leftFactoring.cpp"
-#include "phase 2/grammarFileParser.cpp"
-#include "phase 2/PredictiveParsingTable.cpp"
-#include "phase 2/parser.hpp"
+#include "phase 2/leftRecursionElimination.h"
+#include "phase 2/leftFactoring.h"
+#include "phase 2/grammarFileParser.h"
+#include "phase 2/PredictiveParsingTable.h"
+#include "phase 2/FirstFollowCalculator.h"
+#include "phase 2/parser.h"
 
 using namespace std;
 namespace fs = filesystem;
@@ -19,10 +19,8 @@ void printTokens(const vector<pair<string, string>> &tokens) {
 
 int main() {
     //  processLexicalAnalysis("../input/regex_rules.txt", "../input/input.txt", "../output/tokens.txt");
-    grammarFileParser gfp = grammarFileParser();
-    gfp.readFile("input/grammar.txt");
     LeftRecursionEliminator lre = LeftRecursionEliminator();
-    lre.eliminateLeftRecursion("input/grammar.txt");
+    lre.eliminateLeftRecursion("../input/grammar.txt");
     leftFactoring lf = leftFactoring(lre.gfp);
     lf.leftFactor();
     lf.gfp->printAll();
@@ -43,7 +41,7 @@ int main() {
     ppt.printTable();
 
     // Read tokens from the file
-    string tokenFile = "output/tokens.txt";
+    string tokenFile = "../output/tokens.txt";
     vector<pair<string, string>> tokens = readTokens(tokenFile);
 
     // Add an end-of-input token

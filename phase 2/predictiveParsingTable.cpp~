@@ -1,0 +1,108 @@
+#include "PredictiveParsingTable.h"
+#include "FirstFollowCalculator.h"
+
+using namespace std;
+
+PredictiveParsingTable::PredictiveParsingTable(
+    unordered_map<string, set<string> > firstSets,
+    unordered_map<string, set<string> > followSets,
+    unordered_map<string, vector<string> > grammar,
+    vector<string> nonTerminals
+) : firstSets(firstSets), followSets(followSets), grammar(grammar),
+    nonTerminals(nonTerminals), tableComputed(false) {
+}
+
+void PredictiveParsingTable::computeTable() {
+    if (firstSets.empty()) throw invalid_argument("First sets are empty");
+    if (followSets.empty()) throw invalid_argument("Follow sets are empty");
+
+    try {
+        for (const auto &symbolAndProductions: grammar) {
+            for (const auto &production: symbolAndProductions.second) {
+                updateParsingTable(symbolAndProductions.first,
+                                   FirstFollowCalculator::splitByDelimiter(production, ' '));
+            }
+        }
+    } catch (const std::invalid_argument &e) {
+        cout << "The grammar is not LL(1)." << endl;
+        throw e;
+    }
+
+    for (const auto &A: nonTerminals) {
+        for (const auto &a: followSets.at(A)) {
+            if (parsingTable[A].find(a) == parsingTable[A].end()) {
+                parsingTable[A][a] = ERR;
+            }
+        }
+    }
+}
+
+void PredictiveParsingTable::updateParsingTable(const string &A, const vector<string> &alpha) {
+    set<string> alphaFirst = computeFirstOfSequence(alpha);
+    for (const auto &a: alphaFirst) {
+        if (a !=  EPSILON_STR) {
+            parsingTable[A][a] = joinProduction(alpha);
+        }
+    }
+
+    if (alphaFirst.find( EPSILON_STR) != alphaFirst.end()) {
+        for (const auto &b: followSets.at(A)) {
+            parsingTable[A][b] = joinProduction(alpha);
+        }
+    }
+
+    if (alphaFirst.find( EPSILON_STR) != alphaFirst.end() &&
+        followSets.at(A).find( END_SYMBOL) != followSets.at(A).end()) {
+        parsingTable[A][ END_SYMBOL] = joinProduction(alpha);
+    }
+}
+
+set<string> PredictiveParsingTable::computeFirstOfSequence(const vector<string> &sequence) {
+    set<string> result;
+    bool allCanBeEmpty = true;
+
+    for (const auto &symbol: sequence) {
+        set<string> symFirst = firstSets[symbol];
+
+        for (const auto &f: symFirst) {
+            if (f !=  EPSILON_STR) result.insert(f);
+        }
+
+        if (symFirst.find( EPSILON_STR) == symFirst.end()) {
+            allCanBeEmpty = false;
+            break;
+        }
+    }
+
+    if (allCanBeEmpty && !sequence.empty()) {
+        result.insert( EPSILON_STR);
+    }
+
+    return result;
+}
+
+string PredictiveParsingTable::joinProduction(const vector<string> &production) {
+    string result = "";
+    for (const string &symbol: production) {
+        result += symbol + " ";
+    }
+    return result;
+}
+
+unordered_map<string, unordered_map<string, string> > PredictiveParsingTable::getTable() {
+    if (!tableComputed) {
+        computeTable();
+        tableComputed = true;
+    }
+    return parsingTable;
+}
+
+void PredictiveParsingTable::printTable() {
+    for (const auto &nonTerminal: nonTerminals) {
+        cout << "Non-terminal: " << nonTerminal << endl;
+        for (const auto &entry: parsingTable[nonTerminal]) {
+            cout << "  Terminal: " << entry.first << " => Production: " << entry.second << endl;
+        }
+        cout << endl;
+    }
+}
