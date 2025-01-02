@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.27)
-project(complierGenerator)
+project(compilerGenerator)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE Debug)
 
-add_executable(complierGenerator main.cpp
+add_executable(compilerGenerator main.cpp
         "phase 1/regexFileReader.cpp"
         "phase 1/postfixRegexConvertor.cpp"
         "phase 1/substitutions.cpp"
