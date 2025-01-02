@@ -5,8 +5,8 @@
 using namespace std;
 
 class PredictiveParsingTable {
-    unordered_map<string, set<string> > firstSets;
-    unordered_map<string, set<string> > followSets;
+    unordered_map<string, set<string> > first;
+    unordered_map<string, set<string> > follow;
     unordered_map<string, vector<string> > grammar;
     vector<string> nonTerminals;
     bool tableComputed;
@@ -23,11 +23,9 @@ public:
 
     void computeTable();
 
-    void updateParsingTable(const string &A, const vector<string> &alpha);
+    bool updateTableUsingProduction(const string &A, const string &alpha);
 
-    set<string> computeFirstOfSequence(const vector<string> &sequence);
-
-    string joinProduction(const vector<string> &production);
+    set<string> GetFirstOfProduction(const string &sequence);
 
     unordered_map<string, unordered_map<string, string> > getTable();
 

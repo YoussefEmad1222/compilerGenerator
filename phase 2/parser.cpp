@@ -36,7 +36,7 @@ bool Parser::parse(const vector<pair<string, string> > &tokens) {
         }
 
         string currentToken = tokens[tokenIndex].second;
-
+        if(top == "ERR")    continue;
         if (top == END_SYMBOL) {
             if (currentToken == END_SYMBOL) {
                 cout << "Parsing successful!\n";
