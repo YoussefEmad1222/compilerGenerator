@@ -67,19 +67,16 @@ public:
                     return false;
                 }
             } else {
-                string production = parsingTable.getParsingTable()[top][currentToken];
+                string production = parsingTable.parsingTable[top][currentToken];
 
                 if (production.empty()) {
                     cerr << "Syntax error: no rule for " << top << " with token " << currentToken << "\n";
                     return false;
                 }
 
-                if (production != parsingTable.EPSILON) {
+                if (production != "#") {
                     vector<string> productionTokens = FirstFollowCalculator::splitByDelimiter(production, ' ');
                     for (auto it = productionTokens.rbegin(); it != productionTokens.rend(); ++it) {
-                        if (it->back() == '\'' && it->front() != '\'') {
-                            it->pop_back();
-                        }
                         parseStack.push(*it);
                     }
                 }
