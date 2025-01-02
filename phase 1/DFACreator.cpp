@@ -1,6 +1,7 @@
 //
 // Created by Mariam on 11/29/2024.
 //
+#pragma once
 
 #include "DFACreator.h"
 

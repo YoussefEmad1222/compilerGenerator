@@ -6,6 +6,12 @@
 #include "phase 2/PredictiveParsingTable.cpp"
 #include "phase 2/FirstFollowCalculator.cpp"
 #include "phase 2/parser.cpp"
+#include "phase 1/regexFileReader.cpp"
+#include "phase 1/NFAcreation.cpp"
+#include "phase 1/DFACreator.cpp"
+#include "phase 1/LexicalAnalyzer.cpp"
+#include "phase 1/DFA_minimizer.hpp"
+
 
 using namespace std;
 namespace fs = filesystem;
@@ -18,6 +24,19 @@ void printTokens(const vector<pair<string, string>> &tokens) {
 }
 
 int main() {
+    RegularFileReader regexLoader;
+    regexLoader.readLexicalRules("input/regex_rules.txt");
+    regexLoader.printAll();
+    NFACreation nfaCreator;
+    nfaCreator.createRegexNFAs(regexLoader.expressions, regexLoader.orderedExpressions, regexLoader.keywords, regexLoader.punctuations);
+    const NFA nfa = nfaCreator.combineNFAs();
+    DFACreator dfaCreator(nfa);
+    dfaCreator.createDFA();
+    DFA minimized = minimizeDFA(dfaCreator.getDFA());
+    LexicalAnalyzer analyzer(minimized);
+    cout << endl;
+    analyzer.Analyze("input/input.txt", "output/tokens.txt");
+
     //  processLexicalAnalysis("../input/regex_rules.txt", "../input/input.txt", "../output/tokens.txt");
     LeftRecursionEliminator lre = LeftRecursionEliminator();
     lre.eliminateLeftRecursion("input/grammar.txt");
@@ -29,16 +48,6 @@ int main() {
     // First Set
     ffc.calculateFirst();
     unordered_map<string, set<string> > first = ffc.getFirst();
-
-    // cout << "First:" << endl;
-    // for (const auto &firstSet : first) {
-    //     cout << firstSet.first << " -> ";
-    //     for (const auto &token : firstSet.second) {
-    //         cout << token << " ";
-    //     }
-    //     cout << endl;
-    // }
-    
 
     // Follow Set
     ffc.calculateFollow();
