@@ -1,5 +1,6 @@
+#pragma once
 #include "parser.h"
-#include "FirstFollowCalculator.h"
+#include "firstFollowCalculator.h"
 #include <fstream>
 #include <sstream>
 
@@ -26,20 +27,22 @@ bool Parser::parse(const vector<pair<string, string> > &tokens) {
     size_t tokenIndex = 0;
 
     while (!parseStack.empty()) {
-        printStack(parseStack);
-
-        string top = parseStack.top();
-        parseStack.pop();
+        cout << "\n";
         if (tokenIndex >= tokens.size()) {
             cerr << "Unexpected end of input. Parsing failed.\n";
             return false;
         }
-
         string currentToken = tokens[tokenIndex].second;
+        cout << "current token: " << currentToken << "\ncurrent stack:\n";
+        printStack(parseStack);
+
+        string top = parseStack.top();
+        parseStack.pop();
+
         if(top == "ERR")    continue;
         if (top == END_SYMBOL) {
             if (currentToken == END_SYMBOL) {
-                cout << "Parsing successful!\n";
+                cout << "Parsing done!\n";
                 return true;
             } else {
                 cerr << "Expected end of input but found: " << currentToken << "\n";
@@ -50,14 +53,14 @@ bool Parser::parse(const vector<pair<string, string> > &tokens) {
                 tokenIndex++;
             } else {
                 cerr << "Syntax error: expected " << top << " but found " << currentToken << "\n";
-                return false;
             }
         } else {
             string production = parsingTable.parsingTable[top][currentToken];
 
             if (production.empty()) {
                 cerr << "Syntax error: no rule for " << top << " with token " << currentToken << "\n";
-                return false;
+                parseStack.push(top);
+                tokenIndex++;
             }
 
             if (production != "#") {
@@ -69,6 +72,7 @@ bool Parser::parse(const vector<pair<string, string> > &tokens) {
         }
     }
 
+    assert(false);
     cerr << "Unexpected end of parsing stack.\n";
     return false;
 }
